@@ -1,5 +1,5 @@
 import { FormControlLabel, Stack, Switch, TextField, Typography } from '@mui/material';
-import { ContentCard, PageTitle } from '@palette/ui-common';
+import { ContentCard, PageTitle } from '@palette/platform-sdk';
 
 export function SettingsPage() {
   return (

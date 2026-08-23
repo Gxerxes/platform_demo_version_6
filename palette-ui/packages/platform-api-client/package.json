@@ -1,7 +1,7 @@
 {
   "name": "@palette/platform-api-client",
-  "version": "0.1.0",
-  "description": "Palette platform-api-client module",
+  "version": "0.3.0",
+  "description": "Palette HTTP API client",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -16,6 +16,10 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@palette/platform-config": "workspace:*",
+    "@palette/platform-event": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.0.0",

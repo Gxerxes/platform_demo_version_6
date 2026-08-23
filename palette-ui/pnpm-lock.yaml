@@ -59,21 +59,9 @@ importers:
       '@mui/material':
         specifier: ^6.3.0
         version: 6.5.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@palette/platform-config':
+      '@palette/platform-sdk':
         specifier: workspace:*
-        version: link:../../packages/platform-config
-      '@palette/platform-layout':
-        specifier: workspace:*
-        version: link:../../packages/platform-layout
-      '@palette/platform-navigation':
-        specifier: workspace:*
-        version: link:../../packages/platform-navigation
-      '@palette/platform-shell':
-        specifier: workspace:*
-        version: link:../../packages/platform-shell
-      '@palette/ui-common':
-        specifier: workspace:*
-        version: link:../../packages/ui-common
+        version: link:../../packages/platform-sdk
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -92,6 +80,13 @@ importers:
         version: 6.4.3(@types/node@22.20.1)
 
   packages/platform-api-client:
+    dependencies:
+      '@palette/platform-config':
+        specifier: workspace:*
+        version: link:../platform-config
+      '@palette/platform-event':
+        specifier: workspace:*
+        version: link:../platform-event
     devDependencies:
       react:
         specifier: ^18.3.1
@@ -156,7 +151,29 @@ importers:
         version: 18.3.1(react@18.3.1)
 
   packages/platform-provider:
+    dependencies:
+      '@palette/platform-api-client':
+        specifier: workspace:*
+        version: link:../platform-api-client
+      '@palette/platform-config':
+        specifier: workspace:*
+        version: link:../platform-config
+      '@palette/platform-event':
+        specifier: workspace:*
+        version: link:../platform-event
+      '@palette/platform-security':
+        specifier: workspace:*
+        version: link:../platform-security
     devDependencies:
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@18.3.31)(react@18.3.1)
+      '@emotion/styled':
+        specifier: ^11.14.0
+        version: 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
+      '@mui/material':
+        specifier: ^6.3.0
+        version: 6.5.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -165,6 +182,34 @@ importers:
         version: 18.3.1(react@18.3.1)
 
   packages/platform-sdk:
+    dependencies:
+      '@palette/platform-api-client':
+        specifier: workspace:*
+        version: link:../platform-api-client
+      '@palette/platform-config':
+        specifier: workspace:*
+        version: link:../platform-config
+      '@palette/platform-event':
+        specifier: workspace:*
+        version: link:../platform-event
+      '@palette/platform-layout':
+        specifier: workspace:*
+        version: link:../platform-layout
+      '@palette/platform-navigation':
+        specifier: workspace:*
+        version: link:../platform-navigation
+      '@palette/platform-provider':
+        specifier: workspace:*
+        version: link:../platform-provider
+      '@palette/platform-security':
+        specifier: workspace:*
+        version: link:../platform-security
+      '@palette/platform-shell':
+        specifier: workspace:*
+        version: link:../platform-shell
+      '@palette/ui-common':
+        specifier: workspace:*
+        version: link:../ui-common
     devDependencies:
       react:
         specifier: ^18.3.1
@@ -174,6 +219,10 @@ importers:
         version: 18.3.1(react@18.3.1)
 
   packages/platform-security:
+    dependencies:
+      '@palette/platform-navigation':
+        specifier: workspace:*
+        version: link:../platform-navigation
     devDependencies:
       react:
         specifier: ^18.3.1

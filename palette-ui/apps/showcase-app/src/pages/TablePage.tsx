@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { ContentCard, PageTitle } from '@palette/ui-common';
+import { ContentCard, PageTitle } from '@palette/platform-sdk';
 
 const sampleData = [
   { id: 'TRD-001', symbol: 'AAPL', side: 'BUY', quantity: 1000, status: 'Settled' },

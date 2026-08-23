@@ -1,7 +1,7 @@
 {
   "name": "@palette/platform-event",
-  "version": "0.1.0",
-  "description": "Palette platform-event module",
+  "version": "0.3.0",
+  "description": "Palette event bus for application-wide communication",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

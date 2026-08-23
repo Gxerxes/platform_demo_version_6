@@ -10,6 +10,11 @@ const palettePackages = [
   'platform-navigation',
   'platform-layout',
   'platform-shell',
+  'platform-event',
+  'platform-api-client',
+  'platform-security',
+  'platform-provider',
+  'platform-sdk',
 ];
 
 const alias = Object.fromEntries(
@@ -27,6 +32,13 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api/, ''),
+      },
+    },
   },
   build: {
     outDir: 'dist',

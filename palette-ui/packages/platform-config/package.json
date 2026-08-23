@@ -1,6 +1,6 @@
 {
   "name": "@palette/platform-config",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Palette application configuration types",
   "type": "module",
   "main": "./dist/index.js",

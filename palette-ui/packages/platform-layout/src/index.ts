@@ -13,4 +13,4 @@ export { PaletteThemeProvider } from './theme/PaletteThemeProvider';
 export type { PaletteThemeProviderProps } from './theme/PaletteThemeProvider';
 export { createPaletteTheme } from './theme/createPaletteTheme';
 
-export const PLATFORM_LAYOUT_VERSION = '0.2.0';
+export const PLATFORM_LAYOUT_VERSION = '0.3.0';

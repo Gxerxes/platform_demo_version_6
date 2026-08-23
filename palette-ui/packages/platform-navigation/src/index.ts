@@ -4,4 +4,4 @@ export type { NavigationContextValue, NavigationProviderProps } from './navigati
 export { buildBreadcrumbs, findActiveNavItem } from './utils';
 export type { BreadcrumbItem, NavItem } from './types';
 
-export const PLATFORM_NAVIGATION_VERSION = '0.2.0';
+export const PLATFORM_NAVIGATION_VERSION = '0.3.0';

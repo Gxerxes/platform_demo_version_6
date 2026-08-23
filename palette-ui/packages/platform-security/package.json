@@ -1,7 +1,7 @@
 {
   "name": "@palette/platform-security",
-  "version": "0.1.0",
-  "description": "Palette platform-security module",
+  "version": "0.3.0",
+  "description": "Palette permission and authorization",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -16,6 +16,9 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@palette/platform-navigation": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.0.0",

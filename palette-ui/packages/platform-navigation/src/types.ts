@@ -7,6 +7,7 @@ export interface NavItem {
   icon?: ReactNode;
   children?: NavItem[];
   hidden?: boolean;
+  permission?: string;
 }
 
 export interface BreadcrumbItem {

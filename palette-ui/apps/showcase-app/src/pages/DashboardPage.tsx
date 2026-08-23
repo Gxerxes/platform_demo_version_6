@@ -1,15 +1,12 @@
-import { Button, Chip, Stack, Typography } from '@mui/material';
-import { ContentCard, PageTitle } from '@palette/ui-common';
-import { PLATFORM_LAYOUT_VERSION } from '@palette/platform-layout';
-import { PLATFORM_SHELL_VERSION } from '@palette/platform-shell';
-import { UI_COMMON_VERSION } from '@palette/ui-common';
+import { Chip, Stack, Typography } from '@mui/material';
+import { ContentCard, PageTitle, PLATFORM_SDK_VERSION } from '@palette/platform-sdk';
 
 export function DashboardPage() {
   return (
     <>
       <PageTitle
         title="Dashboard"
-        subtitle="Palette Enterprise Platform — Phase 1 UI Core"
+        subtitle="Palette Enterprise Platform — Phase 2 UI Platform SDK"
       />
 
       <Stack spacing={3}>
@@ -18,42 +15,37 @@ export function DashboardPage() {
             Platform Status
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-            <Chip label={`@palette/platform-shell v${PLATFORM_SHELL_VERSION}`} color="primary" />
-            <Chip label={`@palette/platform-layout v${PLATFORM_LAYOUT_VERSION}`} />
-            <Chip label={`@palette/ui-common v${UI_COMMON_VERSION}`} />
+            <Chip label={`@palette/platform-sdk v${PLATFORM_SDK_VERSION}`} color="primary" />
+            <Chip label="Phase 2 Complete" color="success" />
           </Stack>
         </ContentCard>
 
         <ContentCard>
           <Typography variant="h6" gutterBottom>
-            Phase 1 Deliverables
+            Phase 2 Deliverables
           </Typography>
           <Stack component="ul" spacing={1} sx={{ pl: 2, m: 0 }}>
             <Typography component="li" variant="body2">
-              Application Shell with Header, Sidebar, Breadcrumb
+              PalettePlatformProvider — unified platform context
             </Typography>
             <Typography component="li" variant="body2">
-              MUI Theme system
+              Permission system with PermissionGuard and navigation filtering
             </Typography>
             <Typography component="li" variant="body2">
-              Configurable navigation
+              ApiClient with error handling and event integration
             </Typography>
             <Typography component="li" variant="body2">
-              React Router integration
+              EventBus for application-wide communication
             </Typography>
             <Typography component="li" variant="body2">
-              Basic UI components (PageTitle, ContentCard)
+              Notification system (Snackbar)
             </Typography>
-          </Stack>
-        </ContentCard>
-
-        <ContentCard>
-          <Typography variant="h6" gutterBottom>
-            Quick Actions
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained">Primary Action</Button>
-            <Button variant="outlined">Secondary Action</Button>
+            <Typography component="li" variant="body2">
+              ErrorBoundary and global error handling
+            </Typography>
+            <Typography component="li" variant="body2">
+              PaletteApp — single entry point for business applications
+            </Typography>
           </Stack>
         </ContentCard>
       </Stack>

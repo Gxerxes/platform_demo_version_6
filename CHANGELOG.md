@@ -5,6 +5,19 @@ All notable changes to the Palette Platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-08-23
+
+### Added
+
+- Phase 2: UI Platform SDK
+  - `@palette/platform-provider` — PalettePlatformProvider, Notification, ErrorBoundary
+  - `@palette/platform-api-client` — ApiClient with interceptors and error handling
+  - `@palette/platform-event` — EventBus for application-wide communication
+  - `@palette/platform-security` — Permission system, PermissionGuard, nav filtering
+  - `@palette/platform-sdk` — unified SDK entry with `PaletteApp` component
+  - `usePlatform`, `useApiClient`, `useEventBus`, `useNotification`, `usePermission` hooks
+  - Showcase SDK Demo and Admin permission pages
+
 ## [0.2.0] - 2026-08-23
 
 ### Added

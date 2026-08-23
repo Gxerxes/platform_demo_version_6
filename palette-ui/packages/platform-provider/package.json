@@ -1,7 +1,7 @@
 {
   "name": "@palette/platform-provider",
-  "version": "0.1.0",
-  "description": "Palette platform-provider module",
+  "version": "0.3.0",
+  "description": "Palette platform provider — notification, error handling, unified context",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -17,11 +17,23 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@palette/platform-api-client": "workspace:*",
+    "@palette/platform-config": "workspace:*",
+    "@palette/platform-event": "workspace:*",
+    "@palette/platform-security": "workspace:*"
+  },
   "peerDependencies": {
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
+    "@mui/material": "^6.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   }

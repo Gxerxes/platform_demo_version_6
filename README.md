@@ -32,7 +32,7 @@ pnpm lint
 |-------|------|------|
 | Phase 0 | 项目基础设施 | ✓ 完成 |
 | Phase 1 | UI Core（Shell / Layout / Theme） | ✓ 完成 |
-| Phase 2 | UI Platform SDK | 待开始 |
+| Phase 2 | UI Platform SDK | ✓ 完成 |
 | Phase 3 | Storybook & Documentation | 待开始 |
 | Phase 4 | BFF MVP | 待开始 |
 | Phase 5 | UI + BFF Integration | 待开始 |
