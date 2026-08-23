@@ -21,11 +21,19 @@ export type {
 } from '@palette/platform-provider';
 
 // ── Configuration ────────────────────────────────────────────
+export {
+  defaultApiConfig,
+  defaultPlatformConfig,
+  defaultQueryConfig,
+  resolvePlatformConfig,
+} from '@palette/platform-config';
 export type {
   PaletteApiConfig,
   PaletteAppConfig,
+  PaletteAppMetadata,
   PaletteAuthConfig,
   PalettePlatformConfig,
+  PaletteQueryConfig,
   PaletteThemeConfig,
   ThemeMode,
 } from '@palette/platform-config';
@@ -98,17 +106,38 @@ export {
   ApiClient,
   ApiClientProvider,
   ApiError,
+  createApiClient,
+  createQueryClient,
+  createQueryKeyFactory,
   isPaletteError,
   normalizeError,
+  PlatformQueryClientProvider,
   useApiClient,
+  usePlatformQueryClient,
 } from '@palette/platform-api-client';
 export type {
   ApiClientConfig,
   ApiClientProviderProps,
   HttpMethod,
   PaletteError,
+  PlatformQueryClientProviderProps,
   RequestOptions,
 } from '@palette/platform-api-client';
+
+// ── TanStack Query ───────────────────────────────────────────
+export {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
+export type {
+  QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
+} from '@tanstack/react-query';
 
 // ── Event Bus ────────────────────────────────────────────────
 export {
@@ -128,4 +157,4 @@ export type { ContentCardProps, PageTitleProps } from '@palette/ui-common';
 export { PaletteApp } from './PaletteApp';
 export type { PaletteAppProps } from './PaletteApp';
 
-export const PLATFORM_SDK_VERSION = '0.5.0';
+export const PLATFORM_SDK_VERSION = '0.6.0';

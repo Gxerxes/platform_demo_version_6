@@ -13,53 +13,11 @@ import {
   TableRow,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  ApiError,
-  ContentCard,
-  PageTitle,
-  PermissionGuard,
-  useApiClient,
-} from '@palette/platform-sdk';
-import { useEffect, useMemo, useState } from 'react';
-import { createTradingApi } from '../features/trades/api';
-import type { Trade } from '../features/trades/types';
+import { ApiError, ContentCard, PageTitle, PermissionGuard } from '@palette/platform-sdk';
+import { useTrades } from '../features/trades/trades.query';
 
 export function TradesPage() {
-  const api = useApiClient();
-  const tradingApi = useMemo(() => createTradingApi(api), [api]);
-  const [trades, setTrades] = useState<Trade[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadTrades() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await tradingApi.getTrades();
-        if (!cancelled) {
-          setTrades(data);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof ApiError ? err.message : 'Failed to load trades');
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void loadTrades();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [tradingApi]);
+  const { data: trades = [], isLoading, error } = useTrades();
 
   return (
     <>
@@ -77,12 +35,12 @@ export function TradesPage() {
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {error instanceof ApiError ? error.message : 'Failed to load trades'}
         </Alert>
       )}
 
       <ContentCard noPadding>
-        {loading ? (
+        {isLoading ? (
           <CircularProgress sx={{ display: 'block', m: 4 }} />
         ) : (
           <TableContainer component={Paper} elevation={0}>
@@ -127,7 +85,7 @@ export function TradesPage() {
         )}
       </ContentCard>
 
-      {!loading && trades.length === 0 && (
+      {!isLoading && trades.length === 0 && (
         <Stack alignItems="center" sx={{ mt: 2 }}>
           <Alert severity="info">No trades found. Create one from the New Trade page.</Alert>
         </Stack>

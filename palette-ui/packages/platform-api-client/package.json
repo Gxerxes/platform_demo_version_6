@@ -1,6 +1,6 @@
 {
   "name": "@palette/platform-api-client",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Palette HTTP API client",
   "type": "module",
   "main": "./dist/index.js",
@@ -19,7 +19,9 @@
   },
   "dependencies": {
     "@palette/platform-config": "workspace:*",
-    "@palette/platform-event": "workspace:*"
+    "@palette/platform-event": "workspace:*",
+    "@tanstack/react-query": "^5.62.8",
+    "axios": "^1.7.9"
   },
   "peerDependencies": {
     "react": "^18.0.0",

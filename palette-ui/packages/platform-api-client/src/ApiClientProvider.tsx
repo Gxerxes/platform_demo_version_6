@@ -6,6 +6,7 @@ import { ApiClient } from './ApiClient';
 const ApiClientContext = createContext<ApiClient | null>(null);
 
 export interface ApiClientProviderProps {
+  /** Resolved platform configuration from PalettePlatformProvider */
   config: PalettePlatformConfig;
   children: ReactNode;
 }
@@ -17,9 +18,10 @@ export function ApiClientProvider({ config, children }: ApiClientProviderProps) 
     () =>
       new ApiClient({
         ...config.api,
+        metadata: config.metadata,
         eventBus,
       }),
-    [config.api, eventBus],
+    [config.api, config.metadata, eventBus],
   );
 
   return <ApiClientContext.Provider value={client}>{children}</ApiClientContext.Provider>;

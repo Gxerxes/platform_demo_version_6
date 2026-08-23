@@ -12,9 +12,19 @@ export const paletteConfig: PaletteAppConfig = {
 export const platformConfig: PalettePlatformConfig = {
   api: {
     baseUrl: '/api',
-    timeout: 30000,
+    timeout: 30_000,
+    withCredentials: true,
+  },
+  query: {
+    staleTime: 60_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
   },
   auth: {
     enabled: true,
+  },
+  metadata: {
+    applicationId: '__APP_NAME__',
+    clientVersion: '__VERSION__',
   },
 };

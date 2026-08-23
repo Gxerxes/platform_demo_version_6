@@ -7,13 +7,35 @@ import type {
   Trade,
 } from './types';
 
+export const tradesService = {
+  getDashboardSummary(api: ApiClient) {
+    return api.get<DashboardSummary>('/dashboard/summary');
+  },
+
+  getTrades(api: ApiClient) {
+    return api.get<Trade[]>('/trades');
+  },
+
+  createTrade(api: ApiClient, payload: CreateTradeRequest) {
+    return api.post<Trade>('/trades', payload);
+  },
+
+  getSettlements(api: ApiClient) {
+    return api.get<Settlement[]>('/settlements');
+  },
+
+  getDailyReport(api: ApiClient) {
+    return api.get<DailyReport>('/reports/daily');
+  },
+};
+
 export function createTradingApi(api: ApiClient) {
   return {
-    getDashboardSummary: () => api.get<DashboardSummary>('/dashboard/summary'),
-    getTrades: () => api.get<Trade[]>('/trades'),
-    createTrade: (payload: CreateTradeRequest) => api.post<Trade>('/trades', payload),
-    getSettlements: () => api.get<Settlement[]>('/settlements'),
-    getDailyReport: () => api.get<DailyReport>('/reports/daily'),
+    getDashboardSummary: () => tradesService.getDashboardSummary(api),
+    getTrades: () => tradesService.getTrades(api),
+    createTrade: (payload: CreateTradeRequest) => tradesService.createTrade(api, payload),
+    getSettlements: () => tradesService.getSettlements(api),
+    getDailyReport: () => tradesService.getDailyReport(api),
   };
 }
 

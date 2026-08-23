@@ -11,9 +11,26 @@ export interface PaletteAuthConfig {
 export interface PaletteApiConfig {
   baseUrl: string;
   timeout?: number;
+  withCredentials?: boolean;
+  headers?: Record<string, string>;
+}
+
+export interface PaletteQueryConfig {
+  staleTime?: number;
+  gcTime?: number;
+  retry?: number | boolean;
+  refetchOnWindowFocus?: boolean;
+  refetchOnReconnect?: boolean;
+}
+
+export interface PaletteAppMetadata {
+  applicationId?: string;
+  clientVersion?: string;
 }
 
 export interface PalettePlatformConfig {
   api: PaletteApiConfig;
   auth?: PaletteAuthConfig;
+  query?: PaletteQueryConfig;
+  metadata?: PaletteAppMetadata;
 }

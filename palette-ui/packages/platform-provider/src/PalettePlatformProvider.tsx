@@ -1,6 +1,10 @@
-import { useCallback, useEffect, type ReactNode } from 'react';
-import type { PalettePlatformConfig } from '@palette/platform-config';
-import { ApiClientProvider } from '@palette/platform-api-client';
+import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import {
+  defaultPlatformConfig,
+  resolvePlatformConfig,
+  type PalettePlatformConfig,
+} from '@palette/platform-config';
+import { ApiClientProvider, PlatformQueryClientProvider } from '@palette/platform-api-client';
 import { EventBusProvider, PaletteEvents, useEventBus } from '@palette/platform-event';
 import {
   AuthPermissionProvider,
@@ -100,19 +104,25 @@ export function PalettePlatformProvider({
   children,
 }: PalettePlatformProviderProps) {
   const authEnabled = config.auth?.enabled ?? false;
+  const resolvedConfig = useMemo(
+    () => resolvePlatformConfig(defaultPlatformConfig, undefined, config),
+    [config],
+  );
 
   return (
     <EventBusProvider>
       <NotificationProvider>
-        {authEnabled ? (
-          <AuthPlatformProviders config={config} permissions={permissions}>
-            {children}
-          </AuthPlatformProviders>
-        ) : (
-          <PlatformProviders config={config} permissions={permissions}>
-            {children}
-          </PlatformProviders>
-        )}
+        <PlatformQueryClientProvider config={resolvedConfig}>
+          {authEnabled ? (
+            <AuthPlatformProviders config={resolvedConfig} permissions={permissions}>
+              {children}
+            </AuthPlatformProviders>
+          ) : (
+            <PlatformProviders config={resolvedConfig} permissions={permissions}>
+              {children}
+            </PlatformProviders>
+          )}
+        </PlatformQueryClientProvider>
       </NotificationProvider>
     </EventBusProvider>
   );

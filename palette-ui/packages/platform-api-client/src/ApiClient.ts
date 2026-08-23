@@ -1,6 +1,8 @@
-import type { PaletteApiConfig } from '@palette/platform-config';
+import type { PaletteApiConfig, PaletteAppMetadata } from '@palette/platform-config';
 import type { EventBus } from '@palette/platform-event';
 import { PaletteEvents } from '@palette/platform-event';
+import { createAxiosInstance } from './internal/createAxiosInstance';
+import { normalizeAxiosError } from './internal/normalizeAxiosError';
 import { ApiError } from './errors';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -13,18 +15,20 @@ export interface RequestOptions {
 
 export interface ApiClientConfig extends PaletteApiConfig {
   eventBus?: EventBus;
+  metadata?: PaletteAppMetadata;
   onError?: (error: ApiError) => void;
 }
 
 export class ApiClient {
-  private baseUrl: string;
-  private timeout: number;
+  private readonly axios;
   private eventBus?: EventBus;
   private onError?: (error: ApiError) => void;
 
   constructor(config: ApiClientConfig) {
-    this.baseUrl = config.baseUrl.replace(/\/$/, '');
-    this.timeout = config.timeout ?? 30000;
+    this.axios = createAxiosInstance({
+      api: config,
+      metadata: config.metadata,
+    });
     this.eventBus = config.eventBus;
     this.onError = config.onError;
   }
@@ -56,30 +60,18 @@ export class ApiClient {
     options?: RequestOptions,
   ): Promise<T> {
     const url = this.buildUrl(path, options?.params);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-    const requestInit: RequestInit = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-      credentials: 'include',
-      signal: options?.signal ?? controller.signal,
-    };
-
-    if (body !== undefined && method !== 'GET' && method !== 'DELETE') {
-      requestInit.body = JSON.stringify(body);
-    }
 
     this.eventBus?.emit(PaletteEvents.API_REQUEST, { method, url });
 
     try {
-      const response = await fetch(url, requestInit);
-      clearTimeout(timeoutId);
-
-      const data = await this.parseResponse(response);
+      const response = await this.axios.request<T>({
+        method,
+        url: path.startsWith('/') ? path : `/${path}`,
+        data: body,
+        params: options?.params,
+        headers: options?.headers,
+        signal: options?.signal,
+      });
 
       this.eventBus?.emit(PaletteEvents.API_RESPONSE, {
         method,
@@ -87,37 +79,13 @@ export class ApiClient {
         status: response.status,
       });
 
-      if (!response.ok) {
-        const errorBody = data as { message?: string; code?: string };
-        const error = new ApiError(
-          errorBody?.message ?? response.statusText,
-          response.status,
-          errorBody?.code ?? 'API_ERROR',
-          data,
-        );
-
-        if (response.status === 401) {
-          this.eventBus?.emit(PaletteEvents.AUTH_EXPIRED);
-        }
-
-        this.onError?.(error);
-        this.eventBus?.emit(PaletteEvents.ERROR, error);
-        throw error;
-      }
-
-      return data as T;
+      return response.data;
     } catch (error) {
-      clearTimeout(timeoutId);
+      const apiError = normalizeAxiosError(error);
 
-      if (error instanceof ApiError) {
-        throw error;
+      if (apiError.status === 401) {
+        this.eventBus?.emit(PaletteEvents.AUTH_EXPIRED);
       }
-
-      const apiError = new ApiError(
-        error instanceof Error ? error.message : 'Network error',
-        0,
-        'NETWORK_ERROR',
-      );
 
       this.onError?.(apiError);
       this.eventBus?.emit(PaletteEvents.ERROR, apiError);
@@ -126,27 +94,24 @@ export class ApiClient {
   }
 
   private buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
-    const url = new URL(`${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`);
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined) {
-          url.searchParams.set(key, String(value));
-        }
-      });
+    if (!params) {
+      return normalizedPath;
     }
 
-    return url.toString();
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.set(key, String(value));
+      }
+    });
+
+    const query = searchParams.toString();
+    return query ? `${normalizedPath}?${query}` : normalizedPath;
   }
+}
 
-  private async parseResponse(response: Response): Promise<unknown> {
-    const contentType = response.headers.get('content-type');
-
-    if (contentType?.includes('application/json')) {
-      return response.json();
-    }
-
-    const text = await response.text();
-    return text ? { message: text } : null;
-  }
+export function createApiClient(config: ApiClientConfig): ApiClient {
+  return new ApiClient(config);
 }

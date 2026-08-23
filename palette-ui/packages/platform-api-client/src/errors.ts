@@ -3,6 +3,7 @@ export interface PaletteError {
   message: string;
   status?: number;
   details?: unknown;
+  requestId?: string;
 }
 
 export function normalizeError(error: unknown): PaletteError {
@@ -16,6 +17,7 @@ export function normalizeError(error: unknown): PaletteError {
       message: error.message,
       status: error.status,
       details: error.data,
+      requestId: error.requestId,
     };
   }
 
@@ -50,6 +52,7 @@ export class ApiError extends Error {
     public status: number,
     public code?: string,
     public data?: unknown,
+    public requestId?: string,
   ) {
     super(message);
     this.name = 'ApiError';
