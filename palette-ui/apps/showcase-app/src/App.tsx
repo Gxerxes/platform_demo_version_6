@@ -2,7 +2,6 @@ import { PaletteApp } from '@palette/platform-sdk';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { navigation } from './navigation';
 import { paletteConfig, platformConfig } from './palette.config';
-import { userPermissions } from './permissions';
 import { AdminPage } from './pages/AdminPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SdkDemoPage } from './pages/SdkDemoPage';
@@ -11,12 +10,7 @@ import { TablePage } from './pages/TablePage';
 
 export function App() {
   return (
-    <PaletteApp
-      config={paletteConfig}
-      platformConfig={platformConfig}
-      navigation={navigation}
-      permissions={userPermissions}
-    >
+    <PaletteApp config={paletteConfig} platformConfig={platformConfig} navigation={navigation}>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/sdk" element={<SdkDemoPage />} />

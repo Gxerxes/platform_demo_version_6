@@ -11,12 +11,13 @@ export interface MainLayoutProps {
   config: PaletteAppConfig;
   navigation: NavItem[];
   children: ReactNode;
+  headerActions?: ReactNode;
 }
 
-export function MainLayout({ config, navigation, children }: MainLayoutProps) {
+export function MainLayout({ config, navigation, children, headerActions }: MainLayoutProps) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppHeader config={config} />
+      <AppHeader config={config} headerActions={headerActions} />
       <Box sx={{ display: 'flex', flex: 1 }}>
         <AppSidebar navigation={navigation} />
         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>

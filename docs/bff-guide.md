@@ -76,8 +76,22 @@ export OIDC_CLIENT_SECRET=your-secret
 
 1. 启动 BFF：`mvn spring-boot:run -Dspring-boot.run.profiles=local`
 2. 启动 UI：`cd palette-ui && pnpm dev`
-3. Vite 已将 `/api` 代理至 `http://localhost:8080`
+3. Vite 将 `/api` 代理至 `http://localhost:8080`（保留 `/api` 前缀）
+4. 在 `palette.config.ts` 中启用 BFF 认证：
+
+```ts
+export const platformConfig: PalettePlatformConfig = {
+  api: { baseUrl: '/api' },
+  auth: { enabled: true },
+};
+```
+
+前端将自动：
+- 从 `/api/auth/status` 加载用户与权限
+- 在 Header 显示 UserMenu
+- 401 响应时跳转登录
+- 通过 Session Cookie 调用 BFF 代理 API
 
 ## 下一步
 
-Phase 5 将实现 UI + BFF 完整集成，包括前端认证状态管理与 Session 过期处理。
+Phase 6 将提供完整的 Example Application 作为业务组 Reference Implementation。

@@ -7,15 +7,17 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import type { ReactNode } from 'react';
 import type { PaletteAppConfig } from '@palette/platform-config';
 import { useNavigation } from '@palette/platform-navigation';
 import { LAYOUT_CONSTANTS } from '../constants';
 
 export interface AppHeaderProps {
   config: PaletteAppConfig;
+  headerActions?: ReactNode;
 }
 
-export function AppHeader({ config }: AppHeaderProps) {
+export function AppHeader({ config, headerActions }: AppHeaderProps) {
   const { toggleSidebar } = useNavigation();
 
   return (
@@ -48,9 +50,11 @@ export function AppHeader({ config }: AppHeaderProps) {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main', fontSize: 14 }}>
-          PT
-        </Avatar>
+        {headerActions ?? (
+          <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main', fontSize: 14 }}>
+            PT
+          </Avatar>
+        )}
       </Toolbar>
     </AppBar>
   );

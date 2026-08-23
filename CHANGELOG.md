@@ -5,6 +5,20 @@ All notable changes to the Palette Platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-08-23
+
+### Added
+
+- Phase 5: UI + BFF Integration
+  - `AuthProvider` / `useAuth` — BFF authentication state management
+  - `AuthGuard` — route protection with sign-in prompt
+  - `UserMenu` — header user info and logout
+  - `AuthPermissionProvider` — permissions synced from BFF `/api/auth/user`
+  - Session expiration auto-redirect to BFF login
+  - `palette.config.ts` auth.enabled for BFF integration
+  - TablePage loads live data via BFF `GET /api/trades`
+  - Fixed Vite `/api` proxy to preserve path prefix
+
 ## [0.4.0] - 2026-08-23
 
 ### Added

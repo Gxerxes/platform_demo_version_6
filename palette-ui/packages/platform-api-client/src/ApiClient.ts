@@ -88,10 +88,11 @@ export class ApiClient {
       });
 
       if (!response.ok) {
+        const errorBody = data as { message?: string; code?: string };
         const error = new ApiError(
-          (data as { message?: string })?.message ?? response.statusText,
+          errorBody?.message ?? response.statusText,
           response.status,
-          (data as { code?: string })?.code,
+          errorBody?.code ?? 'API_ERROR',
           data,
         );
 

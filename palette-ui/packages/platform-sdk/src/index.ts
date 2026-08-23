@@ -24,6 +24,7 @@ export type {
 export type {
   PaletteApiConfig,
   PaletteAppConfig,
+  PaletteAuthConfig,
   PalettePlatformConfig,
   PaletteThemeConfig,
   ThemeMode,
@@ -65,13 +66,27 @@ export type {
 
 // ── Security / Permission ────────────────────────────────────
 export {
+  AuthGuard,
+  AuthPermissionProvider,
+  AuthProvider,
   PermissionGuard,
   PermissionProvider,
+  UserMenu,
+  createAuthApi,
   createPermissionChecker,
   filterNavigationByPermission,
+  useAuth,
   usePermission,
 } from '@palette/platform-security';
 export type {
+  AuthApiConfig,
+  AuthContextValue,
+  AuthGuardProps,
+  AuthPermissionProviderProps,
+  AuthProviderProps,
+  AuthSession,
+  AuthStatusResponse,
+  AuthUser,
   Permission,
   PermissionContextValue,
   PermissionGuardProps,
@@ -113,4 +128,4 @@ export type { ContentCardProps, PageTitleProps } from '@palette/ui-common';
 export { PaletteApp } from './PaletteApp';
 export type { PaletteAppProps } from './PaletteApp';
 
-export const PLATFORM_SDK_VERSION = '0.3.0';
+export const PLATFORM_SDK_VERSION = '0.5.0';

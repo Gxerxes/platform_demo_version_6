@@ -32,12 +32,16 @@ pnpm storybook:build
 pnpm lint
 ```
 
-### BFF 服务
+### BFF + UI 联调
 
 ```bash
+# 终端 1：启动 BFF（Mock 模式）
 cd palette-bff
-mvn spring-boot:run -Dspring-boot.run.profiles=local   # http://localhost:8080
-mvn clean test
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+
+# 终端 2：启动 UI
+cd palette-ui
+pnpm dev    # http://localhost:3000，/api 代理至 BFF
 ```
 
 ## 开发阶段
@@ -49,7 +53,7 @@ mvn clean test
 | Phase 2 | UI Platform SDK | ✓ 完成 |
 | Phase 3 | Storybook & Documentation | ✓ 完成 |
 | Phase 4 | BFF MVP | ✓ 完成 |
-| Phase 5 | UI + BFF Integration | 待开始 |
+| Phase 5 | UI + BFF Integration | ✓ 完成 |
 | Phase 6 | Business Application Example | 待开始 |
 
 ## 文档

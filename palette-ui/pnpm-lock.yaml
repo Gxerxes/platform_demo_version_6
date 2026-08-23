@@ -259,10 +259,22 @@ importers:
 
   packages/platform-security:
     dependencies:
+      '@palette/platform-config':
+        specifier: workspace:*
+        version: link:../platform-config
+      '@palette/platform-event':
+        specifier: workspace:*
+        version: link:../platform-event
       '@palette/platform-navigation':
         specifier: workspace:*
         version: link:../platform-navigation
     devDependencies:
+      '@mui/icons-material':
+        specifier: ^6.3.0
+        version: 6.5.0(@mui/material@6.5.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
+      '@mui/material':
+        specifier: ^6.3.0
+        version: 6.5.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -281,6 +293,9 @@ importers:
       '@palette/platform-navigation':
         specifier: workspace:*
         version: link:../platform-navigation
+      '@palette/platform-security':
+        specifier: workspace:*
+        version: link:../platform-security
     devDependencies:
       react:
         specifier: ^18.3.1

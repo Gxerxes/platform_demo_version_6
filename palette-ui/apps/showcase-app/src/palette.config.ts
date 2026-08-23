@@ -2,7 +2,7 @@ import type { PaletteAppConfig, PalettePlatformConfig } from '@palette/platform-
 
 export const paletteConfig: PaletteAppConfig = {
   appName: 'Palette Showcase',
-  version: '0.3.0',
+  version: '0.5.0',
   theme: {
     mode: 'light',
     primaryColor: '#1565c0',
@@ -13,5 +13,8 @@ export const platformConfig: PalettePlatformConfig = {
   api: {
     baseUrl: '/api',
     timeout: 30000,
+  },
+  auth: {
+    enabled: true,
   },
 };

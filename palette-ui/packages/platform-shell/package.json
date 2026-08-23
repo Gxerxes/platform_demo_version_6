@@ -20,7 +20,8 @@
   "dependencies": {
     "@palette/platform-config": "workspace:*",
     "@palette/platform-layout": "workspace:*",
-    "@palette/platform-navigation": "workspace:*"
+    "@palette/platform-navigation": "workspace:*",
+    "@palette/platform-security": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.0.0",

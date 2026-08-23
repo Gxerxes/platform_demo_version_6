@@ -1,4 +1,6 @@
 import {
+  Alert,
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -7,44 +9,97 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { ContentCard, PageTitle } from '@palette/platform-sdk';
+import { ApiError, ContentCard, PageTitle, useApiClient } from '@palette/platform-sdk';
+import { useEffect, useState } from 'react';
 
-const sampleData = [
-  { id: 'TRD-001', symbol: 'AAPL', side: 'BUY', quantity: 1000, status: 'Settled' },
-  { id: 'TRD-002', symbol: 'MSFT', side: 'SELL', quantity: 500, status: 'Pending' },
-  { id: 'TRD-003', symbol: 'GOOGL', side: 'BUY', quantity: 200, status: 'Settled' },
-];
+interface Trade {
+  id: string;
+  symbol: string;
+  side: string;
+  quantity: number;
+  status: string;
+}
 
 export function TablePage() {
+  const api = useApiClient();
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTrades() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await api.get<Trade[]>('/trades');
+        if (!cancelled) {
+          setTrades(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          const message =
+            err instanceof ApiError ? err.message : 'Failed to load trades from BFF';
+          setError(message);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadTrades();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [api]);
+
   return (
     <>
-      <PageTitle title="Table" subtitle="Enterprise table component demonstration" />
+      <PageTitle
+        title="Table"
+        subtitle="Live data from Palette BFF — GET /api/trades"
+      />
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <ContentCard noPadding>
-        <TableContainer component={Paper} elevation={0}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Trade ID</TableCell>
-                <TableCell>Symbol</TableCell>
-                <TableCell>Side</TableCell>
-                <TableCell align="right">Quantity</TableCell>
-                <TableCell>Status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sampleData.map((row) => (
-                <TableRow key={row.id} hover>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.symbol}</TableCell>
-                  <TableCell>{row.side}</TableCell>
-                  <TableCell align="right">{row.quantity.toLocaleString()}</TableCell>
-                  <TableCell>{row.status}</TableCell>
+        {loading ? (
+          <CircularProgress sx={{ display: 'block', m: 4 }} />
+        ) : (
+          <TableContainer component={Paper} elevation={0}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Trade ID</TableCell>
+                  <TableCell>Symbol</TableCell>
+                  <TableCell>Side</TableCell>
+                  <TableCell align="right">Quantity</TableCell>
+                  <TableCell>Status</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {trades.map((row) => (
+                  <TableRow key={row.id} hover>
+                    <TableCell>{row.id}</TableCell>
+                    <TableCell>{row.symbol}</TableCell>
+                    <TableCell>{row.side}</TableCell>
+                    <TableCell align="right">{row.quantity.toLocaleString()}</TableCell>
+                    <TableCell>{row.status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </ContentCard>
     </>
   );

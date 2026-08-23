@@ -12,4 +12,4 @@ export type { PalettePlatformProviderProps } from './PalettePlatformProvider';
 export { usePlatform } from './usePlatform';
 export type { PlatformContextValue } from './usePlatform';
 
-export const PLATFORM_PROVIDER_VERSION = '0.3.0';
+export const PLATFORM_PROVIDER_VERSION = '0.5.0';

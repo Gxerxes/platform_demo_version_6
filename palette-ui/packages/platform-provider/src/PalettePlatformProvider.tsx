@@ -1,8 +1,13 @@
-import { useEffect, type ReactNode } from 'react';
+import { useCallback, useEffect, type ReactNode } from 'react';
 import type { PalettePlatformConfig } from '@palette/platform-config';
 import { ApiClientProvider } from '@palette/platform-api-client';
 import { EventBusProvider, PaletteEvents, useEventBus } from '@palette/platform-event';
-import { PermissionProvider, type Permission } from '@palette/platform-security';
+import {
+  AuthPermissionProvider,
+  AuthProvider,
+  PermissionProvider,
+  type Permission,
+} from '@palette/platform-security';
 import { ErrorBoundary } from './ErrorBoundary';
 import { NotificationProvider, useNotification } from './NotificationProvider';
 
@@ -24,7 +29,7 @@ function GlobalErrorHandler({ children }: { children: ReactNode }) {
     });
 
     const unsubscribeAuth = eventBus.on(PaletteEvents.AUTH_EXPIRED, () => {
-      notification.showWarning('Session expired. Please login again.');
+      notification.showWarning('Session expired. Please sign in again.');
     });
 
     const onUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -63,17 +68,51 @@ function PlatformProviders({
   );
 }
 
+function AuthPlatformProviders({
+  config,
+  permissions = [],
+  children,
+}: PalettePlatformProviderProps) {
+  const notification = useNotification();
+
+  const handleSessionExpired = useCallback(() => {
+    const loginPath = config.auth?.loginPath ?? '/auth/login';
+    const baseUrl = config.api.baseUrl.replace(/\/$/, '');
+    window.location.href = `${baseUrl}${loginPath.startsWith('/') ? loginPath : `/${loginPath}`}`;
+  }, [config]);
+
+  return (
+    <AuthProvider config={config} onSessionExpired={handleSessionExpired}>
+      <AuthPermissionProvider fallbackPermissions={permissions}>
+        <ApiClientProvider config={config}>
+          <ErrorBoundary notification={notification}>
+            <GlobalErrorHandler>{children}</GlobalErrorHandler>
+          </ErrorBoundary>
+        </ApiClientProvider>
+      </AuthPermissionProvider>
+    </AuthProvider>
+  );
+}
+
 export function PalettePlatformProvider({
   config,
   permissions,
   children,
 }: PalettePlatformProviderProps) {
+  const authEnabled = config.auth?.enabled ?? false;
+
   return (
     <EventBusProvider>
       <NotificationProvider>
-        <PlatformProviders config={config} permissions={permissions}>
-          {children}
-        </PlatformProviders>
+        {authEnabled ? (
+          <AuthPlatformProviders config={config} permissions={permissions}>
+            {children}
+          </AuthPlatformProviders>
+        ) : (
+          <PlatformProviders config={config} permissions={permissions}>
+            {children}
+          </PlatformProviders>
+        )}
       </NotificationProvider>
     </EventBusProvider>
   );
