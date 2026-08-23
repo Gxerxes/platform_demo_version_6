@@ -1,0 +1,30 @@
+{
+  "name": "@palette/ui-common",
+  "version": "0.2.0",
+  "description": "Palette common UI components",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@mui/material": "^6.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@mui/material": "^6.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

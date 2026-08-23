@@ -1,0 +1,60 @@
+# Palette Platform - GitLab CI/CD Pipeline
+# Phase 0: 基础 CI 流水线
+
+stages:
+  - install
+  - lint
+  - build
+  - test
+
+variables:
+  PNPM_VERSION: "9.15.0"
+  NODE_VERSION: "20"
+
+.default_node:
+  image: node:${NODE_VERSION}-alpine
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@${PNPM_VERSION} --activate
+    - cd palette-ui
+    - pnpm install --frozen-lockfile
+
+# ── Install & Cache ──────────────────────────────────────────
+install:
+  extends: .default_node
+  stage: install
+  script:
+    - pnpm install --frozen-lockfile
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - palette-ui/node_modules/
+      - palette-ui/.pnpm-store/
+
+# ── Lint ─────────────────────────────────────────────────────
+lint:
+  extends: .default_node
+  stage: lint
+  script:
+    - pnpm lint
+  needs: [install]
+
+# ── Build ────────────────────────────────────────────────────
+build:
+  extends: .default_node
+  stage: build
+  script:
+    - pnpm build
+  artifacts:
+    paths:
+      - palette-ui/apps/showcase-app/dist/
+    expire_in: 1 week
+  needs: [install]
+
+# ── Test ─────────────────────────────────────────────────────
+test:
+  extends: .default_node
+  stage: test
+  script:
+    - pnpm test
+  needs: [install]
