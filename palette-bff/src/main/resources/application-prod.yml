@@ -1,0 +1,27 @@
+palette:
+  session:
+    store: redis
+    cookie-secure: true
+  rate-limit:
+    enabled: true
+  security:
+    fail-fast-on-misconfiguration: true
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false

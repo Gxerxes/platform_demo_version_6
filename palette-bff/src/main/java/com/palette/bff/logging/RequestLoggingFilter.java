@@ -1,5 +1,6 @@
 package com.palette.bff.logging;
 
+import com.palette.bff.platform.observability.MdcSupport;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RequestLoggingFilter.class);
@@ -30,11 +31,16 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } finally {
             long duration = System.currentTimeMillis() - start;
-            log.info("{} {} {} {}ms",
+            log.info(
+                    "event=http_request method={} path={} status={} durationMs={} {}={} {}={}",
                     request.getMethod(),
                     request.getRequestURI(),
                     response.getStatus(),
-                    duration);
+                    duration,
+                    MdcSupport.REQUEST_ID,
+                    org.slf4j.MDC.get(MdcSupport.REQUEST_ID),
+                    MdcSupport.CORRELATION_ID,
+                    org.slf4j.MDC.get(MdcSupport.CORRELATION_ID));
         }
     }
 }

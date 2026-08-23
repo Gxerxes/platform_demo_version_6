@@ -1,5 +1,6 @@
 package com.palette.bff.proxy;
 
+import com.palette.bff.api.ApiPaths;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping({ApiPaths.LEGACY_API, ApiPaths.V1_API})
 @ConditionalOnProperty(name = "palette.auth.mode", havingValue = "mock")
 @Tag(name = "Demo Business API", description = "Mock trading APIs for local development (palette.auth.mode=mock)")
 public class DemoApiController {
@@ -58,6 +60,7 @@ public class DemoApiController {
 
     @PostMapping("/trades")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("@authorizationService.hasPermission('trades:create')")
     @Operation(summary = "Create trade", description = "Creates a new mock trade")
     @ApiResponse(responseCode = "201", description = "Trade created")
     public Map<String, Object> createTrade(

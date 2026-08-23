@@ -118,3 +118,12 @@ export const platformConfig: PalettePlatformConfig = {
 ## 参考实现
 
 完整业务应用示例见 [Trading App 开发指南](./example-app-guide.md)。
+
+## 完整开发文档
+
+| 文档 | 说明 |
+|------|------|
+| [BFF 开发指南（中文）](./bff-development-guide.zh-CN.md) | 完整开发与运维指南 |
+| [BFF Development Guide (English)](./bff-development-guide.en.md) | Full development guide |
+| [企业架构说明](./bff-enterprise-architecture.md) | 模块职责与请求流程 |
+| [已知限制与后续工作](./bff-roadmap.md) | 能力边界与路线图 |

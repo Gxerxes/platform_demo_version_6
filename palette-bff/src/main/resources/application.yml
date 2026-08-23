@@ -4,26 +4,36 @@ spring:
 
 server:
   port: 8080
+  shutdown: graceful
   servlet:
     session:
       cookie:
         name: PALETTE_SESSION
         http-only: true
         same-site: lax
+        secure: ${PALETTE_SESSION_COOKIE_SECURE:false}
       timeout: 30m
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
   endpoint:
     health:
       show-details: when_authorized
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
 
 logging:
   level:
     com.palette.bff: INFO
+    AUDIT: INFO
     org.springframework.security: INFO
 
 springdoc:
@@ -41,12 +51,35 @@ palette:
     mode: oidc
     login-success-url: http://localhost:3000
     logout-success-url: http://localhost:3000
+    machine:
+      enabled: false
+      issuer-uri: ${OIDC_ISSUER_URI:}
+      audience: palette-bff
   cors:
     allowed-origins:
       - http://localhost:3000
+  session:
+    store: memory
+    cookie-secure: false
   proxy:
     enabled: true
     base-url: http://localhost:9090
+  rate-limit:
+    enabled: false
+    default-policy:
+      requests-per-minute: 100
+    policies:
+      reporting:
+        requests-per-minute: 20
+  downstream:
+    default-config:
+      connect-timeout: 3s
+      read-timeout: 5s
+      retry:
+        enabled: true
+        max-attempts: 2
+  security:
+    fail-fast-on-misconfiguration: true
 
 spring.security.oauth2.client:
   registration:
@@ -62,3 +95,6 @@ spring.security.oauth2.client:
   provider:
     palette:
       issuer-uri: ${OIDC_ISSUER_URI:https://login.example.com/realms/palette}
+
+spring.security.oauth2.resourceserver.jwt:
+  issuer-uri: ${palette.auth.machine.issuer-uri:${OIDC_ISSUER_URI:}}

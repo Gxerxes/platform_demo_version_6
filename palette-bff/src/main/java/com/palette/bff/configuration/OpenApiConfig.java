@@ -41,8 +41,8 @@ public class OpenApiConfig {
     public GroupedOpenApi authApi() {
         return GroupedOpenApi.builder()
                 .group("auth")
-                .displayName("Authentication")
-                .pathsToMatch("/api/auth/**")
+                .displayName("Authentication (Browser)")
+                .pathsToMatch("/api/auth/**", "/palette/api/v1/auth/**")
                 .build();
     }
 
@@ -53,11 +53,17 @@ public class OpenApiConfig {
                 .displayName("Demo Business API")
                 .pathsToMatch(
                         "/api/dashboard/**",
+                        "/palette/api/v1/dashboard/**",
                         "/api/trades",
                         "/api/trades/**",
+                        "/palette/api/v1/trades",
+                        "/palette/api/v1/trades/**",
                         "/api/settlements",
                         "/api/settlements/**",
-                        "/api/reports/**")
+                        "/palette/api/v1/settlements",
+                        "/palette/api/v1/settlements/**",
+                        "/api/reports/**",
+                        "/palette/api/v1/reports/**")
                 .build();
     }
 }

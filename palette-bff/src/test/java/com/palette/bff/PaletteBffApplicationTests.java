@@ -70,4 +70,11 @@ class PaletteBffApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.info.title").value("Palette BFF API"));
     }
+
+    @Test
+    void v1AuthUserEndpointWorksInMockMode() throws Exception {
+        mockMvc.perform(get("/palette/api/v1/auth/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value("demo-user"));
+    }
 }

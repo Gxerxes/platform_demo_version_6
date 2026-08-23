@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Enterprise BFF platform foundations
+  - API versioning: `/palette/api/v1/**` (legacy `/api/**` preserved)
+  - Request context: `X-Request-Id`, `X-Correlation-Id`, `X-Trace-Id` propagation
+  - Standard error model with `requestId` field
+  - `@PreAuthorize` permission checks via `AuthorizationService`
+  - Optional JWT Bearer auth for machine/third-party consumers
+  - Rate limiting (configurable, in-memory for MVP)
+  - Audit logging (login, logout, auth failures, rate limits)
+  - Downstream proxy resilience (timeouts, GET retry)
+  - Redis session support (`palette.session.store=redis`)
+  - Production config validator (fail-fast on prod profile)
+  - Security headers filter
+  - Graceful shutdown, liveness/readiness probes
+  - Dockerfile for container deployment
+  - Documentation: `docs/bff-enterprise-architecture.md`
+
 - BFF OpenAPI / Swagger UI (`springdoc-openapi`)
   - Swagger UI: `/swagger-ui.html`
   - OpenAPI JSON: `/v3/api-docs`

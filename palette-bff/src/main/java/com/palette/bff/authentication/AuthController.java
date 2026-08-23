@@ -1,9 +1,12 @@
 package com.palette.bff.authentication;
 
+import com.palette.bff.api.ApiPaths;
 import com.palette.bff.authentication.session.SessionInfo;
 import com.palette.bff.authentication.session.SessionService;
 import com.palette.bff.authentication.token.TokenService;
 import com.palette.bff.configuration.PaletteProperties;
+import com.palette.bff.platform.audit.AuditEventType;
+import com.palette.bff.platform.audit.AuditService;
 import com.palette.bff.user.UserInfo;
 import com.palette.bff.user.UserInfoMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +29,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping({ApiPaths.LEGACY_AUTH, ApiPaths.V1_AUTH})
 @Tag(name = "Authentication", description = "BFF login, logout, user and session APIs")
 public class AuthController {
 
@@ -34,16 +37,19 @@ public class AuthController {
     private final UserInfoMapper userInfoMapper;
     private final SessionService sessionService;
     private final ObjectProvider<TokenService> tokenServiceProvider;
+    private final AuditService auditService;
 
     public AuthController(
             PaletteProperties paletteProperties,
             UserInfoMapper userInfoMapper,
             SessionService sessionService,
-            ObjectProvider<TokenService> tokenServiceProvider) {
+            ObjectProvider<TokenService> tokenServiceProvider,
+            AuditService auditService) {
         this.paletteProperties = paletteProperties;
         this.userInfoMapper = userInfoMapper;
         this.sessionService = sessionService;
         this.tokenServiceProvider = tokenServiceProvider;
+        this.auditService = auditService;
     }
 
     @GetMapping("/login")
@@ -52,6 +58,7 @@ public class AuthController {
     @ApiResponse(responseCode = "302", description = "OIDC redirect")
     public ResponseEntity<?> login(HttpServletResponse response) throws IOException {
         if ("mock".equalsIgnoreCase(paletteProperties.getAuth().getMode())) {
+            auditService.record(AuditEventType.LOGIN, "mock-user", "LOGIN", "/auth/login", "SUCCESS", null);
             return ResponseEntity.ok(Map.of(
                     "message", "Mock authentication is active",
                     "redirectUrl", paletteProperties.getAuth().getLoginSuccessUrl()
@@ -65,9 +72,11 @@ public class AuthController {
     @Operation(summary = "Logout", description = "Invalidates the current BFF session")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String actor = authentication != null ? authentication.getName() : "anonymous";
         if (authentication != null) {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
+        auditService.record(AuditEventType.LOGOUT, actor, "LOGOUT", "/auth/logout", "SUCCESS", null);
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
 

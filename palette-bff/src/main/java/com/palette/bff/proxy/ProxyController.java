@@ -1,9 +1,11 @@
 package com.palette.bff.proxy;
 
+import com.palette.bff.api.ApiPaths;
 import com.palette.bff.authentication.token.TokenService;
 import com.palette.bff.configuration.PaletteProperties;
 import com.palette.bff.exception.ErrorCode;
 import com.palette.bff.exception.PaletteException;
+import com.palette.bff.platform.resilience.DownstreamProxyService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,8 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -31,19 +31,19 @@ public class ProxyController {
     );
 
     private final PaletteProperties paletteProperties;
-    private final RestClient restClient;
+    private final DownstreamProxyService downstreamProxyService;
     private final ObjectProvider<TokenService> tokenServiceProvider;
 
     public ProxyController(
             PaletteProperties paletteProperties,
-            RestClient.Builder restClientBuilder,
+            DownstreamProxyService downstreamProxyService,
             ObjectProvider<TokenService> tokenServiceProvider) {
         this.paletteProperties = paletteProperties;
-        this.restClient = restClientBuilder.build();
+        this.downstreamProxyService = downstreamProxyService;
         this.tokenServiceProvider = tokenServiceProvider;
     }
 
-    @RequestMapping("/api/**")
+    @RequestMapping({"/api/**", ApiPaths.V1_API + "/**"})
     public ResponseEntity<String> proxy(
             HttpServletRequest request,
             @RequestBody(required = false) String body) {
@@ -52,7 +52,7 @@ public class ProxyController {
             throw new PaletteException(ErrorCode.NOT_FOUND, "API proxy is disabled");
         }
 
-        String path = request.getRequestURI().substring("/api".length());
+        String path = extractDownstreamPath(request.getRequestURI());
         if (path.startsWith("/auth")) {
             throw new PaletteException(ErrorCode.NOT_FOUND, "Auth endpoints are handled by BFF");
         }
@@ -73,27 +73,20 @@ public class ProxyController {
             }
         }
 
-        try {
-            RestClient.RequestBodySpec spec = restClient.method(method)
-                    .uri(targetUrl)
-                    .headers(httpHeaders -> {
-                        httpHeaders.clear();
-                        httpHeaders.addAll(headers);
-                    });
+        ResponseEntity<String> response = downstreamProxyService.forward(method, targetUrl, headers, body);
+        return ResponseEntity.status(response.getStatusCode())
+                .headers(filterResponseHeaders(response.getHeaders()))
+                .body(response.getBody());
+    }
 
-            ResponseEntity<String> response = (body != null && !body.isBlank())
-                    ? spec.body(body).retrieve().toEntity(String.class)
-                    : spec.retrieve().toEntity(String.class);
-
-            return ResponseEntity.status(response.getStatusCode())
-                    .headers(filterResponseHeaders(response.getHeaders()))
-                    .body(response.getBody());
-        } catch (RestClientResponseException ex) {
-            return ResponseEntity.status(ex.getStatusCode())
-                    .body(ex.getResponseBodyAsString());
-        } catch (Exception ex) {
-            throw new PaletteException(ErrorCode.PROXY_ERROR, "Failed to proxy request", ex);
+    private String extractDownstreamPath(String requestUri) {
+        if (requestUri.startsWith(ApiPaths.V1_API)) {
+            return requestUri.substring(ApiPaths.V1_API.length());
         }
+        if (requestUri.startsWith(ApiPaths.LEGACY_API)) {
+            return requestUri.substring(ApiPaths.LEGACY_API.length());
+        }
+        throw new PaletteException(ErrorCode.NOT_FOUND, "Unsupported API path");
     }
 
     private HttpHeaders copyHeaders(HttpServletRequest request) {

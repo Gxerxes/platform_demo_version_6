@@ -145,6 +145,16 @@ proxy: {
 }
 ```
 
+## 文档
+
+| 文档 | 说明 |
+|------|------|
+| [开发指南（中文）](../docs/bff-development-guide.zh-CN.md) | 完整 BFF 开发与运维指南 |
+| [Development Guide (EN)](../docs/bff-development-guide.en.md) | Full development guide |
+| [企业架构](../docs/bff-enterprise-architecture.md) | 模块职责与请求流程 |
+| [已知限制与路线图](../docs/bff-roadmap.md) | 能力边界与后续工作 |
+| [快速入门](../docs/bff-guide.md) | 精简版联调指南 |
+
 ## 构建
 
 ```bash

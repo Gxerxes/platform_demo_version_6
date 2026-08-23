@@ -1,5 +1,7 @@
 package com.palette.bff.exception;
 
+import com.palette.bff.platform.audit.AuditEventType;
+import com.palette.bff.platform.audit.AuditService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,6 +17,12 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final AuditService auditService;
+
+    public GlobalExceptionHandler(AuditService auditService) {
+        this.auditService = auditService;
+    }
+
     @ExceptionHandler(PaletteException.class)
     public ResponseEntity<ErrorResponse> handlePaletteException(PaletteException ex, HttpServletRequest request) {
         HttpStatus status = mapStatus(ex.getErrorCode());
@@ -26,16 +34,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(
             AuthenticationException ex, HttpServletRequest request) {
+        auditService.record(
+                AuditEventType.AUTHENTICATION_FAILURE,
+                "anonymous",
+                "AUTHENTICATE",
+                request.getRequestURI(),
+                "FAILURE",
+                null);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ErrorResponse.of(ErrorCode.AUTH_REQUIRED, ex.getMessage(), request.getRequestURI())
+                ErrorResponse.of(ErrorCode.AUTH_REQUIRED, "Authentication required", request.getRequestURI())
         );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(
             AccessDeniedException ex, HttpServletRequest request) {
+        auditService.record(
+                AuditEventType.AUTHORIZATION_DENIED,
+                "authenticated-user",
+                "ACCESS",
+                request.getRequestURI(),
+                "DENIED",
+                null);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                ErrorResponse.of(ErrorCode.FORBIDDEN, ex.getMessage(), request.getRequestURI())
+                ErrorResponse.of(ErrorCode.FORBIDDEN, "Access denied", request.getRequestURI())
         );
     }
 
@@ -50,15 +72,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NoResourceFoundException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ErrorResponse.of(ErrorCode.NOT_FOUND, ex.getMessage(), request.getRequestURI())
+                ErrorResponse.of(ErrorCode.NOT_FOUND, "Resource not found", request.getRequestURI())
         );
     }
 
     @ExceptionHandler(RestClientResponseException.class)
     public ResponseEntity<ErrorResponse> handleRestClientException(
             RestClientResponseException ex, HttpServletRequest request) {
-        return ResponseEntity.status(ex.getStatusCode()).body(
-                ErrorResponse.of(ErrorCode.PROXY_ERROR, ex.getStatusText(), request.getRequestURI())
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(
+                ErrorResponse.of(ErrorCode.PROXY_ERROR, "Downstream service error", request.getRequestURI())
         );
     }
 
@@ -74,8 +96,11 @@ public class GlobalExceptionHandler {
             case AUTH_REQUIRED, AUTH_TOKEN_EXPIRED, AUTH_TOKEN_UNAVAILABLE -> HttpStatus.UNAUTHORIZED;
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case CONFLICT -> HttpStatus.CONFLICT;
             case VALIDATION_ERROR -> HttpStatus.BAD_REQUEST;
-            case PROXY_ERROR -> HttpStatus.BAD_GATEWAY;
+            case RATE_LIMITED -> HttpStatus.TOO_MANY_REQUESTS;
+            case DOWNSTREAM_TIMEOUT -> HttpStatus.GATEWAY_TIMEOUT;
+            case DOWNSTREAM_UNAVAILABLE, PROXY_ERROR -> HttpStatus.BAD_GATEWAY;
             case INTERNAL_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

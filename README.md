@@ -70,6 +70,10 @@ pnpm dev    # http://localhost:3000，/api 代理至 BFF
 - [提交规范](./docs/commit-convention.md)
 - [版本与发布策略](./docs/versioning-and-release.md)
 - [BFF 开发指南](./docs/bff-guide.md)
+- [BFF 开发指南（中文完整版）](./docs/bff-development-guide.zh-CN.md)
+- [BFF Development Guide (English)](./docs/bff-development-guide.en.md)
+- [BFF 企业架构](./docs/bff-enterprise-architecture.md)
+- [BFF 已知限制与路线图](./docs/bff-roadmap.md)
 - [Trading App 开发指南](./docs/example-app-guide.md)
 - [App 脚手架指南](./docs/scaffold-guide.md)
 

@@ -46,7 +46,12 @@ public class OidcSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SecurityPaths.PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/api/auth/login", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/palette/api/v1/auth/login",
+                                "/oauth2/**",
+                                "/login/oauth2/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -65,6 +70,10 @@ public class OidcSecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
+
+        if (paletteProperties.getAuth().getMachine().isEnabled()) {
+            http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+        }
 
         return http.build();
     }
