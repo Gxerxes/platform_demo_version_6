@@ -6,8 +6,8 @@
 
 | 模块 | 说明 | 状态 |
 |------|------|------|
-| [palette-ui](./palette-ui/) | React + TypeScript 企业级 UI Common Framework | Phase 0 ✓ |
-| palette-bff | Spring Boot 3 BFF 基础服务 | Phase 4（规划中） |
+| [palette-ui](./palette-ui/) | React + TypeScript 企业级 UI Common Framework | ✓ 完成 |
+| [palette-bff](./palette-bff/) | Spring Boot 3 BFF 基础服务 | ✓ 完成 |
 
 ## 快速开始
 
@@ -32,6 +32,14 @@ pnpm storybook:build
 pnpm lint
 ```
 
+### BFF 服务
+
+```bash
+cd palette-bff
+mvn spring-boot:run -Dspring-boot.run.profiles=local   # http://localhost:8080
+mvn clean test
+```
+
 ## 开发阶段
 
 | Phase | 目标 | 状态 |
@@ -40,7 +48,7 @@ pnpm lint
 | Phase 1 | UI Core（Shell / Layout / Theme） | ✓ 完成 |
 | Phase 2 | UI Platform SDK | ✓ 完成 |
 | Phase 3 | Storybook & Documentation | ✓ 完成 |
-| Phase 4 | BFF MVP | 待开始 |
+| Phase 4 | BFF MVP | ✓ 完成 |
 | Phase 5 | UI + BFF Integration | 待开始 |
 | Phase 6 | Business Application Example | 待开始 |
 
@@ -50,6 +58,7 @@ pnpm lint
 - [分支策略](./docs/branching-strategy.md)
 - [提交规范](./docs/commit-convention.md)
 - [版本与发布策略](./docs/versioning-and-release.md)
+- [BFF 开发指南](./docs/bff-guide.md)
 
 ## 技术栈
 

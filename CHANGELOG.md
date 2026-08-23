@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Phase 4: BFF MVP (`palette-bff`)
+  - Spring Boot 3.4 + Spring Security OAuth2/OIDC
+  - Auth API: login, logout, user, session, status
+  - Token management with automatic refresh (OIDC mode)
+  - API Proxy with Bearer token forwarding
+  - Mock authentication profile for local development
+  - Demo `/api/trades` endpoint in mock mode
+  - Standardized error responses and request logging
+  - Health check via Spring Actuator
+
+### Added
+
 - Phase 3: Storybook & Documentation
   - Storybook 8 with Vite builder and monorepo package aliases
   - Component stories: PageTitle, ContentCard, AppHeader, AppBreadcrumb, MainLayout, PermissionGuard, PaletteShell, PaletteApp

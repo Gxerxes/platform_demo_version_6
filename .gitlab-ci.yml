@@ -62,3 +62,30 @@ test:
   script:
     - pnpm test
   needs: [install]
+
+# ── BFF Build & Test ─────────────────────────────────────────
+.default_maven:
+  image: maven:3.9-eclipse-temurin-21
+  before_script:
+    - cd palette-bff
+
+bff:test:
+  extends: .default_maven
+  stage: test
+  script:
+    - mvn -B clean test
+  cache:
+    key: maven-bff-${CI_COMMIT_REF_SLUG}
+    paths:
+      - palette-bff/.m2/repository/
+
+bff:build:
+  extends: .default_maven
+  stage: build
+  script:
+    - mvn -B clean package -DskipTests
+  artifacts:
+    paths:
+      - palette-bff/target/*.jar
+    expire_in: 1 week
+  needs: [bff:test]
