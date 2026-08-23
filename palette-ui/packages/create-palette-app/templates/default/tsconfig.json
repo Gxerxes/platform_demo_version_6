@@ -1,0 +1,7 @@
+{
+  "extends": "__TSCONFIG_EXTENDS__",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src"]
+}

@@ -38,6 +38,8 @@ pnpm dev        # http://localhost:3000
 | 命令 | 说明 |
 |------|------|
 | `pnpm dev` | 启动 showcase-app 开发服务器 |
+| `pnpm dev:trading` | 启动 trading-app (:3001) |
+| `pnpm create-app <name>` | 脚手架创建新业务应用 |
 | `pnpm storybook` | 启动 Storybook 开发者门户 (http://localhost:6006) |
 | `pnpm storybook:build` | 构建 Storybook 静态站点 |
 | `pnpm build` | 构建所有 workspace 包 |

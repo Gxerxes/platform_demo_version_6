@@ -22,6 +22,9 @@ pnpm dev
 # 启动 Trading 参考实现（Phase 6）
 pnpm dev:trading    # http://localhost:3001
 
+# 创建新业务应用（Phase 7）
+pnpm create-app settlement-app
+
 # 构建所有包
 pnpm build
 
@@ -58,6 +61,7 @@ pnpm dev    # http://localhost:3000，/api 代理至 BFF
 | Phase 4 | BFF MVP | ✓ 完成 |
 | Phase 5 | UI + BFF Integration | ✓ 完成 |
 | Phase 6 | Business Application Example | ✓ 完成 |
+| Phase 7 | App Scaffolding (`create-palette-app`) | ✓ 完成 |
 
 ## 文档
 
@@ -67,6 +71,7 @@ pnpm dev    # http://localhost:3000，/api 代理至 BFF
 - [版本与发布策略](./docs/versioning-and-release.md)
 - [BFF 开发指南](./docs/bff-guide.md)
 - [Trading App 开发指南](./docs/example-app-guide.md)
+- [App 脚手架指南](./docs/scaffold-guide.md)
 
 ## 技术栈
 

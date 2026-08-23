@@ -1,0 +1,20 @@
+{
+  "name": "create-palette-app",
+  "version": "0.7.0",
+  "description": "Scaffold a new Palette business application",
+  "type": "module",
+  "bin": {
+    "create-palette-app": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

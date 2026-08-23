@@ -11,8 +11,11 @@ describe('AuthError', () => {
 });
 
 describe('createAuthApi', () => {
+  const location = { href: '' };
+
   beforeEach(() => {
-    vi.stubGlobal('location', { href: '' });
+    location.href = '';
+    vi.stubGlobal('window', { location });
   });
 
   afterEach(() => {
@@ -31,6 +34,6 @@ describe('createAuthApi', () => {
 
     api.login();
 
-    expect(window.location.href).toBe('/api/auth/login');
+    expect(location.href).toBe('/api/auth/login');
   });
 });

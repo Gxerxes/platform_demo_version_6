@@ -5,6 +5,22 @@ All notable changes to the Palette Platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] - 2026-08-23
+
+### Added
+
+- Phase 7: App Scaffolding (`create-palette-app`)
+  - `pnpm create-app <name>` — scaffold new business apps in monorepo
+  - `pnpm create palette-app <name>` — standard create command (after publish)
+  - Default template: PaletteApp, auth, navigation, Dashboard + Settings
+  - Auto port detection from existing apps (starts at 3002)
+  - Monorepo mode (`workspace:*` + Vite aliases) and `--standalone` mode
+  - Documentation: `docs/scaffold-guide.md`
+
+### Fixed
+
+- `createAuthApi` — undefined optional path overrides no longer break login redirect
+
 ## [0.6.0] - 2026-08-23
 
 ### Added
