@@ -57,4 +57,17 @@ class PaletteBffApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("SET-001"));
     }
+
+    @Test
+    void swaggerUiIsAvailable() throws Exception {
+        mockMvc.perform(get("/swagger-ui/index.html"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void openApiDocsAreAvailable() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.info.title").value("Palette BFF API"));
+    }
 }

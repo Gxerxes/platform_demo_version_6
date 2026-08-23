@@ -6,6 +6,9 @@ import com.palette.bff.authentication.token.TokenService;
 import com.palette.bff.configuration.PaletteProperties;
 import com.palette.bff.user.UserInfo;
 import com.palette.bff.user.UserInfoMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.ObjectProvider;
@@ -24,6 +27,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "BFF login, logout, user and session APIs")
 public class AuthController {
 
     private final PaletteProperties paletteProperties;
@@ -43,6 +47,9 @@ public class AuthController {
     }
 
     @GetMapping("/login")
+    @Operation(summary = "Initiate login", description = "Redirects to OIDC provider, or returns mock login info in local mode")
+    @ApiResponse(responseCode = "200", description = "Mock mode response")
+    @ApiResponse(responseCode = "302", description = "OIDC redirect")
     public ResponseEntity<?> login(HttpServletResponse response) throws IOException {
         if ("mock".equalsIgnoreCase(paletteProperties.getAuth().getMode())) {
             return ResponseEntity.ok(Map.of(
@@ -55,6 +62,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout", description = "Invalidates the current BFF session")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -64,6 +72,7 @@ public class AuthController {
     }
 
     @GetMapping("/user")
+    @Operation(summary = "Get current user", description = "Returns authenticated user profile and permissions")
     public ResponseEntity<UserInfo> user() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserInfo userInfo = userInfoMapper.fromAuthentication(authentication);
@@ -74,11 +83,13 @@ public class AuthController {
     }
 
     @GetMapping("/session")
+    @Operation(summary = "Get session info", description = "Returns session authentication state and expiry")
     public ResponseEntity<SessionInfo> session(HttpServletRequest request) {
         return ResponseEntity.ok(sessionService.getSessionInfo(request));
     }
 
     @GetMapping("/status")
+    @Operation(summary = "Get auth status", description = "Returns user, session and token metadata in a single payload")
     public ResponseEntity<Map<String, Object>> status(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserInfo userInfo = userInfoMapper.fromAuthentication(authentication);

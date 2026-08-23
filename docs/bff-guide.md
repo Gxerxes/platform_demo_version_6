@@ -53,6 +53,13 @@ React → Palette BFF (Session) → Access Token → Business Service
 | `GET /api/auth/session` | Session 信息 |
 | `GET /api/auth/status` | 完整认证状态 |
 | `GET /actuator/health` | 健康检查 |
+| `GET /swagger-ui.html` | Swagger UI |
+| `GET /v3/api-docs` | OpenAPI 3 JSON |
+
+API 按分组展示：
+
+- **Authentication** — `/api/auth/**`
+- **Demo Business API** — Mock 业务接口（local profile）
 
 ## 错误码标准
 

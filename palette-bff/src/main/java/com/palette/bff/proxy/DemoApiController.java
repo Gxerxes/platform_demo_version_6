@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RestController
 @RequestMapping("/api")
 @ConditionalOnProperty(name = "palette.auth.mode", havingValue = "mock")
+@Tag(name = "Demo Business API", description = "Mock trading APIs for local development (palette.auth.mode=mock)")
 public class DemoApiController {
 
     private final AtomicInteger tradeSequence = new AtomicInteger(4);
@@ -29,6 +36,7 @@ public class DemoApiController {
     ));
 
     @GetMapping("/dashboard/summary")
+    @Operation(summary = "Dashboard summary", description = "Aggregated trade statistics for the dashboard")
     public Map<String, Object> dashboardSummary() {
         long settled = trades.stream().filter(t -> "Settled".equals(t.get("status"))).count();
         long pending = trades.stream().filter(t -> "Pending".equals(t.get("status"))).count();
@@ -43,13 +51,20 @@ public class DemoApiController {
     }
 
     @GetMapping("/trades")
+    @Operation(summary = "List trades", description = "Returns all mock trades")
     public List<Map<String, Object>> trades() {
         return List.copyOf(trades);
     }
 
     @PostMapping("/trades")
     @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, Object> createTrade(@RequestBody CreateTradeRequest request) {
+    @Operation(summary = "Create trade", description = "Creates a new mock trade")
+    @ApiResponse(responseCode = "201", description = "Trade created")
+    public Map<String, Object> createTrade(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = CreateTradeRequest.class)))
+            @RequestBody CreateTradeRequest request) {
         String id = "TRD-" + String.format("%03d", tradeSequence.getAndIncrement());
         Map<String, Object> trade = createTrade(
                 id,
@@ -64,6 +79,7 @@ public class DemoApiController {
     }
 
     @GetMapping("/settlements")
+    @Operation(summary = "List settlements", description = "Returns mock settlement records")
     public List<Map<String, Object>> settlements() {
         return List.of(
                 Map.of("id", "SET-001", "tradeId", "TRD-001", "amount", 175000.0, "currency", "USD", "status", "Completed", "valueDate", "2026-08-21"),
@@ -73,6 +89,7 @@ public class DemoApiController {
     }
 
     @GetMapping("/reports/daily")
+    @Operation(summary = "Daily report", description = "Returns a generated daily trading report")
     public Map<String, Object> dailyReport() {
         return Map.of(
                 "reportDate", LocalDate.now().toString(),
@@ -95,6 +112,9 @@ public class DemoApiController {
         return trade;
     }
 
-    public record CreateTradeRequest(String symbol, String side, int quantity) {
+    public record CreateTradeRequest(
+            @Schema(example = "AAPL") String symbol,
+            @Schema(example = "BUY", allowableValues = {"BUY", "SELL"}) String side,
+            @Schema(example = "100") int quantity) {
     }
 }

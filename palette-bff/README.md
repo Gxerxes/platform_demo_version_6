@@ -12,6 +12,7 @@ Palette Enterprise BFF — 基于 Spring Boot 3 的统一 Backend-for-Frontend �
 - API Proxy（携带 Access Token 转发至业务服务）
 - 标准化 Error Handling
 - Health Check
+- OpenAPI / Swagger UI
 
 ## 快速开始
 
@@ -23,6 +24,10 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
 服务地址：http://localhost:8080
+
+Swagger UI：http://localhost:8080/swagger-ui.html
+
+OpenAPI JSON：http://localhost:8080/v3/api-docs
 
 ### 验证 API
 
@@ -85,6 +90,8 @@ palette-bff/
 | GET | `/api/auth/session` | Session 信息 |
 | GET | `/api/auth/status` | 认证状态 |
 | GET | `/actuator/health` | 健康检查 |
+| GET | `/swagger-ui.html` | Swagger UI 文档 |
+| GET | `/v3/api-docs` | OpenAPI 3 规范（JSON） |
 | * | `/api/**` | 代理至业务服务（除 `/api/auth/**`） |
 
 ## 标准错误响应
@@ -107,6 +114,18 @@ palette-bff/
 | `palette.auth.login-success-url` | 登录成功跳转 | `http://localhost:3000` |
 | `palette.proxy.base-url` | 业务服务地址 | `http://localhost:9090` |
 | `palette.proxy.enabled` | 是否启用代理 | `true` |
+| `springdoc.swagger-ui.enabled` | 是否启用 Swagger UI | `true` |
+| `springdoc.api-docs.enabled` | 是否启用 OpenAPI JSON | `true` |
+
+生产环境建议关闭 Swagger：
+
+```yaml
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+```
 
 ## 与前端集成
 

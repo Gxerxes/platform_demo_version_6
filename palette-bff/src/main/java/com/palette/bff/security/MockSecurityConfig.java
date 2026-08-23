@@ -32,7 +32,7 @@ public class MockSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers(SecurityPaths.PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(mockAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

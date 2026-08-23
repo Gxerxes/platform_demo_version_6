@@ -5,6 +5,14 @@ All notable changes to the Palette Platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+### Added
+
+- BFF OpenAPI / Swagger UI (`springdoc-openapi`)
+  - Swagger UI: `/swagger-ui.html`
+  - OpenAPI JSON: `/v3/api-docs`
+  - API groups: Authentication, Demo Business API
+  - Session cookie security scheme documentation
+
 ## [0.7.0] - 2026-08-23
 
 ### Added
