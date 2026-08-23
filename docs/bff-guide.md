@@ -72,10 +72,26 @@ export OIDC_CLIENT_ID=palette-bff
 export OIDC_CLIENT_SECRET=your-secret
 ```
 
+## Mock 业务 API（local profile）
+
+`palette.auth.mode=mock` 时，BFF 提供以下 Demo 接口供 Trading App 联调：
+
+| 方法 | 端点 | 说明 |
+|------|------|------|
+| GET | `/api/dashboard/summary` | Dashboard 汇总 |
+| GET | `/api/trades` | 交易列表 |
+| POST | `/api/trades` | 创建交易 `{ symbol, side, quantity }` |
+| GET | `/api/settlements` | 结算记录 |
+| GET | `/api/reports/daily` | 日报 |
+
+Mock 用户默认权限：`dashboard:view`, `trades:view`, `trades:create`, `reports:view`, `settlements:view`, `admin:view`
+
 ## 与前端联调
 
 1. 启动 BFF：`mvn spring-boot:run -Dspring-boot.run.profiles=local`
-2. 启动 UI：`cd palette-ui && pnpm dev`
+2. 启动 UI：
+   - Showcase：`cd palette-ui && pnpm dev`（:3000）
+   - Trading App：`cd palette-ui && pnpm dev:trading`（:3001）
 3. Vite 将 `/api` 代理至 `http://localhost:8080`（保留 `/api` 前缀）
 4. 在 `palette.config.ts` 中启用 BFF 认证：
 
@@ -92,6 +108,6 @@ export const platformConfig: PalettePlatformConfig = {
 - 401 响应时跳转登录
 - 通过 Session Cookie 调用 BFF 代理 API
 
-## 下一步
+## 参考实现
 
-Phase 6 将提供完整的 Example Application 作为业务组 Reference Implementation。
+完整业务应用示例见 [Trading App 开发指南](./example-app-guide.md)。

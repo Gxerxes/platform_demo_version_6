@@ -5,6 +5,19 @@ All notable changes to the Palette Platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-08-23
+
+### Added
+
+- Phase 6: Business Application Example (`apps/trading-app`)
+  - Reference Implementation for Post-Trade trading workflows
+  - Pages: Dashboard, Trades, New Trade (Form), Settlements, Reports, Admin
+  - Feature-based API layer (`features/trades/api.ts`)
+  - Permission-guarded navigation and UI (`trades:view`, `trades:create`, etc.)
+  - `pnpm dev:trading` script (port 3001)
+  - BFF mock APIs: `/api/dashboard/summary`, `POST /api/trades`, `/api/settlements`, `/api/reports/daily`
+  - Documentation: `apps/trading-app/README.md`, `docs/example-app-guide.md`
+
 ## [0.5.0] - 2026-08-23
 
 ### Added

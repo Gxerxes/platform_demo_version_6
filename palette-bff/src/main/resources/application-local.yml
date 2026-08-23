@@ -8,6 +8,10 @@ spring:
 palette:
   auth:
     mode: mock
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:3001
   proxy:
     enabled: false
 

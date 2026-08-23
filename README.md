@@ -19,6 +19,9 @@ pnpm install
 # 启动 Showcase 应用
 pnpm dev
 
+# 启动 Trading 参考实现（Phase 6）
+pnpm dev:trading    # http://localhost:3001
+
 # 构建所有包
 pnpm build
 
@@ -54,7 +57,7 @@ pnpm dev    # http://localhost:3000，/api 代理至 BFF
 | Phase 3 | Storybook & Documentation | ✓ 完成 |
 | Phase 4 | BFF MVP | ✓ 完成 |
 | Phase 5 | UI + BFF Integration | ✓ 完成 |
-| Phase 6 | Business Application Example | 待开始 |
+| Phase 6 | Business Application Example | ✓ 完成 |
 
 ## 文档
 
@@ -63,6 +66,7 @@ pnpm dev    # http://localhost:3000，/api 代理至 BFF
 - [提交规范](./docs/commit-convention.md)
 - [版本与发布策略](./docs/versioning-and-release.md)
 - [BFF 开发指南](./docs/bff-guide.md)
+- [Trading App 开发指南](./docs/example-app-guide.md)
 
 ## 技术栈
 

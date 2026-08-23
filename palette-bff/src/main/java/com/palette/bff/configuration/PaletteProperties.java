@@ -65,7 +65,15 @@ public class PaletteProperties {
             private String displayName = "Demo User";
             private String email = "demo@palette.local";
             private List<String> permissions = new ArrayList<>(List.of(
-                    "dashboard:view", "components:view", "table:view", "settings:view", "admin:view"
+                    "dashboard:view",
+                    "trades:view",
+                    "trades:create",
+                    "reports:view",
+                    "settlements:view",
+                    "admin:view",
+                    "components:view",
+                    "table:view",
+                    "settings:view"
             ));
 
             public String getUserId() {

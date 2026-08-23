@@ -1,11 +1,12 @@
 {
   "name": "palette-ui",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "description": "Palette Enterprise UI Common Framework",
   "scripts": {
     "dev": "pnpm --filter @palette/showcase-app dev",
+    "dev:trading": "pnpm --filter @palette/trading-app dev",
     "build": "pnpm -r build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

@@ -43,4 +43,18 @@ class PaletteBffApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("TRD-001"));
     }
+
+    @Test
+    void dashboardSummaryEndpointWorksInMockMode() throws Exception {
+        mockMvc.perform(get("/api/dashboard/summary"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalTrades").exists());
+    }
+
+    @Test
+    void settlementsEndpointWorksInMockMode() throws Exception {
+        mockMvc.perform(get("/api/settlements"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value("SET-001"));
+    }
 }
