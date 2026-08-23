@@ -8,6 +8,10 @@ export interface AuthGuardProps {
   loadingFallback?: ReactNode;
 }
 
+async function handleSignIn(login: () => Promise<void>) {
+  await login();
+}
+
 export function AuthGuard({ children, fallback, loadingFallback }: AuthGuardProps) {
   const { isAuthenticated, isLoading, login } = useAuth();
 
@@ -31,7 +35,7 @@ export function AuthGuard({ children, fallback, loadingFallback }: AuthGuardProp
           <Typography color="text.secondary" sx={{ mb: 3 }}>
             Please sign in to access this application.
           </Typography>
-          <Button variant="contained" onClick={login}>
+          <Button variant="contained" onClick={() => void handleSignIn(login)}>
             Sign in
           </Button>
         </Box>

@@ -7,6 +7,7 @@ import com.palette.bff.authentication.token.TokenService;
 import com.palette.bff.configuration.PaletteProperties;
 import com.palette.bff.platform.audit.AuditEventType;
 import com.palette.bff.platform.audit.AuditService;
+import com.palette.bff.security.MockAuthSupport;
 import com.palette.bff.user.UserInfo;
 import com.palette.bff.user.UserInfoMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +59,7 @@ public class AuthController {
     @ApiResponse(responseCode = "302", description = "OIDC redirect")
     public ResponseEntity<?> login(HttpServletResponse response) throws IOException {
         if ("mock".equalsIgnoreCase(paletteProperties.getAuth().getMode())) {
+            MockAuthSupport.clearLoggedOut(response);
             auditService.record(AuditEventType.LOGIN, "mock-user", "LOGIN", "/auth/login", "SUCCESS", null);
             return ResponseEntity.ok(Map.of(
                     "message", "Mock authentication is active",
@@ -73,6 +75,11 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String actor = authentication != null ? authentication.getName() : "anonymous";
+
+        if ("mock".equalsIgnoreCase(paletteProperties.getAuth().getMode())) {
+            MockAuthSupport.markLoggedOut(response);
+        }
+
         if (authentication != null) {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }

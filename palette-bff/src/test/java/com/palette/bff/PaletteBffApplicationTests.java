@@ -4,10 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.palette.bff.security.MockAuthSupport;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,6 +74,28 @@ class PaletteBffApplicationTests {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.info.title").value("Palette BFF API"));
+    }
+
+    @Test
+    void mockLogoutClearsAuthenticationUntilLogin() throws Exception {
+        mockMvc.perform(get("/api/auth/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value("demo-user"));
+
+        MvcResult logoutResult = mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var loggedOutCookie = logoutResult.getResponse().getCookie(MockAuthSupport.LOGGED_OUT_COOKIE);
+        mockMvc.perform(get("/api/auth/user").cookie(loggedOutCookie))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/api/auth/login").cookie(loggedOutCookie))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/auth/user"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value("demo-user"));
     }
 
     @Test

@@ -81,8 +81,23 @@ export function createAuthApi(config: AuthApiConfig) {
     getStatus: () => request<AuthStatusResponse>(resolveUrl(config.baseUrl, paths.statusPath)),
     getUser: () => request<AuthUser>(resolveUrl(config.baseUrl, paths.userPath)),
     getSession: () => request<AuthSession>(resolveUrl(config.baseUrl, paths.sessionPath)),
-    login: () => {
-      window.location.href = resolveUrl(config.baseUrl, paths.loginPath);
+    login: async () => {
+      const url = resolveUrl(config.baseUrl, paths.loginPath);
+      const response = await fetch(url, {
+        credentials: 'include',
+        redirect: 'manual',
+      });
+
+      if (response.type === 'opaqueredirect' || response.status === 302) {
+        window.location.href = url;
+        return;
+      }
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const message = (body as { message?: string }).message ?? response.statusText;
+        throw new AuthError('AUTH_ERROR', message, response.status);
+      }
     },
     logout: () =>
       request<void>(resolveUrl(config.baseUrl, paths.logoutPath), { method: 'POST' }),

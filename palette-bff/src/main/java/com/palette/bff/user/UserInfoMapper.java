@@ -1,6 +1,7 @@
 package com.palette.bff.user;
 
 import com.palette.bff.security.MockUserPrincipal;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -12,7 +13,9 @@ import java.util.List;
 public class UserInfoMapper {
 
     public UserInfo fromAuthentication(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
 

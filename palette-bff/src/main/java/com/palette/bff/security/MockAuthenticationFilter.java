@@ -31,6 +31,11 @@ public class MockAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
+        if (MockAuthSupport.isLoggedOut(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             PaletteProperties.Auth.Mock mock = paletteProperties.getAuth().getMock();
             var authorities = mock.getPermissions().stream()

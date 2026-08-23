@@ -9,7 +9,7 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: () => void;
+  login: () => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -63,9 +63,10 @@ export function AuthProvider({ config, children, onSessionExpired }: AuthProvide
     }
   }, [authApi]);
 
-  const login = useCallback(() => {
-    authApi.login();
-  }, [authApi]);
+  const login = useCallback(async () => {
+    await authApi.login();
+    await refresh();
+  }, [authApi, refresh]);
 
   const logout = useCallback(async () => {
     try {

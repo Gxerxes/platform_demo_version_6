@@ -23,7 +23,6 @@ export function UserMenu() {
   const handleLogout = async () => {
     setAnchorEl(null);
     await logout();
-    window.location.reload();
   };
 
   return (

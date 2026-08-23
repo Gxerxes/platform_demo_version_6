@@ -20,9 +20,17 @@ describe('createAuthApi', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
-  it('uses default auth paths when optional paths are undefined', () => {
+  it('uses default auth paths when optional paths are undefined', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      type: 'basic',
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
     const api = createAuthApi({
       baseUrl: '/api',
       loginPath: undefined,
@@ -32,8 +40,11 @@ describe('createAuthApi', () => {
       statusPath: undefined,
     });
 
-    api.login();
+    await api.login();
 
-    expect(location.href).toBe('/api/auth/login');
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/login', {
+      credentials: 'include',
+      redirect: 'manual',
+    });
   });
 });
