@@ -41,7 +41,13 @@ function resolveUrl(baseUrl: string, path: string): string {
 }
 
 export function createAuthApi(config: AuthApiConfig) {
-  const paths = { ...DEFAULT_PATHS, ...config };
+  const paths = {
+    loginPath: config.loginPath ?? DEFAULT_PATHS.loginPath,
+    logoutPath: config.logoutPath ?? DEFAULT_PATHS.logoutPath,
+    userPath: config.userPath ?? DEFAULT_PATHS.userPath,
+    sessionPath: config.sessionPath ?? DEFAULT_PATHS.sessionPath,
+    statusPath: config.statusPath ?? DEFAULT_PATHS.statusPath,
+  };
 
   async function request<T>(url: string, init?: RequestInit): Promise<T> {
     const response = await fetch(url, {
