@@ -10,6 +10,8 @@ stages:
 variables:
   PNPM_VERSION: "9.15.0"
   NODE_VERSION: "20"
+  STORYBOOK_DISABLE_TELEMETRY: "1"
+  CI: "true"
 
 .default_node:
   image: node:${NODE_VERSION}-alpine
@@ -45,9 +47,11 @@ build:
   stage: build
   script:
     - pnpm build
+    - pnpm storybook:build
   artifacts:
     paths:
       - palette-ui/apps/showcase-app/dist/
+      - palette-ui/storybook-static/
     expire_in: 1 week
   needs: [install]
 

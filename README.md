@@ -22,6 +22,12 @@ pnpm dev
 # 构建所有包
 pnpm build
 
+# 启动 Storybook 开发者门户
+pnpm storybook          # http://localhost:6006
+
+# 构建 Storybook 静态站点
+pnpm storybook:build
+
 # 代码检查
 pnpm lint
 ```
@@ -33,7 +39,7 @@ pnpm lint
 | Phase 0 | 项目基础设施 | ✓ 完成 |
 | Phase 1 | UI Core（Shell / Layout / Theme） | ✓ 完成 |
 | Phase 2 | UI Platform SDK | ✓ 完成 |
-| Phase 3 | Storybook & Documentation | 待开始 |
+| Phase 3 | Storybook & Documentation | ✓ 完成 |
 | Phase 4 | BFF MVP | 待开始 |
 | Phase 5 | UI + BFF Integration | 待开始 |
 | Phase 6 | Business Application Example | 待开始 |

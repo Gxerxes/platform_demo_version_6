@@ -1,0 +1,133 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Palette/API Reference" />
+
+# API Reference
+
+## Components
+
+### PaletteApp
+
+Single entry point for business applications.
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `config` | `PaletteAppConfig` | Yes | App name, version, theme |
+| `platformConfig` | `PalettePlatformConfig` | Yes | API and platform settings |
+| `navigation` | `NavItem[]` | Yes | Sidebar navigation items |
+| `permissions` | `string[]` | No | User permissions for nav filtering |
+| `defaultSidebarCollapsed` | `boolean` | No | Initial sidebar state |
+
+### PaletteShell
+
+Application shell without platform provider. Use `PaletteApp` instead for most cases.
+
+### PermissionGuard
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `permission` | `string` | Required single permission |
+| `anyOf` | `string[]` | Match any permission |
+| `allOf` | `string[]` | Match all permissions |
+| `fallback` | `ReactNode` | Content when denied |
+
+### PageTitle
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `title` | `string` | Page heading |
+| `subtitle` | `string` | Optional description |
+| `action` | `ReactNode` | Right-side action slot |
+
+### ContentCard
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `noPadding` | `boolean` | Remove CardContent padding |
+| `children` | `ReactNode` | Card content |
+
+## Hooks
+
+### usePlatform(config)
+
+Returns unified platform context: `{ config, api, events, permission, notification }`.
+
+### useApiClient()
+
+Returns `ApiClient` instance. Methods: `get`, `post`, `put`, `patch`, `delete`.
+
+### useNotification()
+
+Returns `{ showSuccess, showError, showWarning, showInfo, showNotification }`.
+
+### usePermission()
+
+Returns `{ permissions, hasPermission, hasAnyPermission, hasAllPermissions }`.
+
+### useEventBus()
+
+Returns `EventBus` instance. Methods: `on`, `off`, `emit`, `clear`.
+
+### useNavigation()
+
+Returns `{ items, sidebarCollapsed, toggleSidebar, setSidebarCollapsed }`.
+
+## Types
+
+### PaletteAppConfig
+
+```ts
+interface PaletteAppConfig {
+  appName: string;
+  logo?: ReactNode;
+  version?: string;
+  theme?: { mode?: 'light' | 'dark'; primaryColor?: string };
+}
+```
+
+### PalettePlatformConfig
+
+```ts
+interface PalettePlatformConfig {
+  api: { baseUrl: string; timeout?: number };
+}
+```
+
+### NavItem
+
+```ts
+interface NavItem {
+  id: string;
+  label: string;
+  path?: string;
+  icon?: ReactNode;
+  children?: NavItem[];
+  hidden?: boolean;
+  permission?: string;
+}
+```
+
+## Events
+
+| Event | Constant | Description |
+|-------|----------|-------------|
+| Error | `PaletteEvents.ERROR` | API or application error |
+| Auth Expired | `PaletteEvents.AUTH_EXPIRED` | Session/token expired |
+| Notification | `PaletteEvents.NOTIFICATION` | Custom notification event |
+| API Request | `PaletteEvents.API_REQUEST` | Outgoing API request |
+| API Response | `PaletteEvents.API_RESPONSE` | API response received |
+
+## Error Handling
+
+```ts
+import { ApiError, normalizeError } from '@palette/platform-sdk';
+
+try {
+  await api.get('/trades');
+} catch (error) {
+  if (error instanceof ApiError) {
+    console.log(error.status, error.code);
+  }
+  const normalized = normalizeError(error);
+}
+```

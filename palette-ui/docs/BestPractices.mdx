@@ -1,0 +1,118 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Palette/Best Practices" />
+
+# Best Practices
+
+## Application Structure
+
+Organize business applications with clear separation:
+
+```
+trading-app/
+├── src/
+│   ├── pages/          # Route-level pages
+│   ├── features/       # Business feature modules
+│   ├── routes/         # Route definitions
+│   ├── palette.config.ts
+│   ├── navigation.tsx
+│   └── App.tsx
+```
+
+## Use PaletteApp as Entry Point
+
+Always wrap your application with `PaletteApp` from `@palette/platform-sdk`.
+Do not manually compose Shell + Provider unless you have a specific need.
+
+```tsx
+// Recommended
+import { PaletteApp } from '@palette/platform-sdk';
+
+// Avoid (unless customizing deeply)
+import { PaletteShell } from '@palette/platform-shell';
+import { PalettePlatformProvider } from '@palette/platform-provider';
+```
+
+## Permission Naming Convention
+
+Use `resource:action` format:
+
+```
+dashboard:view
+trades:create
+trades:edit
+admin:manage
+reports:export
+```
+
+Apply permissions at two levels:
+
+1. **Navigation** — `permission` field on `NavItem` (auto-filtered by PaletteApp)
+2. **UI** — `<PermissionGuard permission="trades:create">` for buttons/sections
+
+## API Calls
+
+Use `useApiClient()` for all HTTP requests:
+
+```tsx
+import { useApiClient } from '@palette/platform-sdk';
+
+function TradeList() {
+  const api = useApiClient();
+
+  const loadTrades = async () => {
+    const data = await api.get<Trade[]>('/trades');
+    setTrades(data);
+  };
+}
+```
+
+Benefits:
+- Consistent error handling
+- Automatic auth-expired event emission
+- Event bus integration for monitoring
+
+## Notifications
+
+Use `useNotification()` instead of custom toast libraries:
+
+```tsx
+const { showSuccess, showError } = useNotification();
+
+try {
+  await api.post('/trades', trade);
+  showSuccess('Trade created successfully');
+} catch {
+  showError('Failed to create trade');
+}
+```
+
+## Events
+
+Use the event bus for cross-module communication:
+
+```tsx
+import { useEventBus, PaletteEvents } from '@palette/platform-sdk';
+
+const events = useEventBus();
+events.on(PaletteEvents.AUTH_EXPIRED, () => redirectToLogin());
+```
+
+## Component Usage
+
+- Use `PageTitle` for consistent page headers
+- Use `ContentCard` for content sections
+- Keep business logic in `features/`, not in page components
+
+## Theming
+
+Configure theme via `palette.config.ts`:
+
+```ts
+theme: {
+  mode: 'light',        // or 'dark'
+  primaryColor: '#1565c0',
+}
+```
+
+Do not override MUI theme directly in business apps.

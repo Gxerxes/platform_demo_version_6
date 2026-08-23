@@ -1,0 +1,98 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Palette/Migration Guide" />
+
+# Migration Guide
+
+## From Custom Enterprise Shell
+
+If your team has an existing application shell, migrate incrementally:
+
+### Step 1: Install Palette SDK
+
+```bash
+pnpm add @palette/platform-sdk
+```
+
+### Step 2: Extract Configuration
+
+Move hardcoded app name, theme, and API base URL to `palette.config.ts`.
+
+| Before | After |
+|--------|-------|
+| `document.title = 'Trading'` | `config.appName` in palette.config.ts |
+| Custom CSS theme variables | `config.theme` in palette.config.ts |
+| `axios.defaults.baseURL` | `platformConfig.api.baseUrl` |
+
+### Step 3: Replace Shell
+
+```tsx
+// Before
+<AppLayout header={<Header />} sidebar={<Sidebar />}>
+  <Routes>...</Routes>
+</AppLayout>
+
+// After
+<PaletteApp config={config} platformConfig={platformConfig} navigation={nav} permissions={perms}>
+  <Routes>...</Routes>
+</PaletteApp>
+```
+
+### Step 4: Migrate API Calls
+
+```tsx
+// Before
+const { data } = await axios.get('/api/trades');
+
+// After
+const api = useApiClient();
+const data = await api.get<Trade[]>('/trades');
+```
+
+### Step 5: Migrate Permissions
+
+```tsx
+// Before
+{user.role === 'admin' && <AdminPanel />}
+
+// After
+<PermissionGuard permission="admin:view">
+  <AdminPanel />
+</PermissionGuard>
+```
+
+### Step 6: Migrate Notifications
+
+```tsx
+// Before
+toast.success('Saved');
+
+// After
+const { showSuccess } = useNotification();
+showSuccess('Saved');
+```
+
+## Version Migration
+
+### 0.2.0 → 0.3.0
+
+- Replace `PaletteShell` with `PaletteApp` for full SDK capabilities
+- Add `platformConfig` with API settings
+- Add `permissions` prop for navigation filtering
+- Import from `@palette/platform-sdk` instead of individual packages
+
+### 0.3.0 → 0.4.0
+
+- No breaking changes
+- Storybook and documentation added
+- Refer to Developer Portal for component usage
+
+## Checklist
+
+- [ ] `palette.config.ts` created
+- [ ] `navigation.tsx` with permissions
+- [ ] `PaletteApp` wrapping routes
+- [ ] API calls migrated to `useApiClient`
+- [ ] Permission checks use `PermissionGuard`
+- [ ] Custom header/sidebar removed
+- [ ] Notifications use `useNotification`

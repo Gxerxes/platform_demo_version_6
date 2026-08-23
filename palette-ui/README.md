@@ -28,7 +28,9 @@ palette-ui/
 ```bash
 pnpm install
 pnpm dev          # 启动 showcase-app
+pnpm storybook    # 启动 Storybook 开发者门户 (http://localhost:6006)
 pnpm build        # 构建所有包
+pnpm storybook:build  # 构建 Storybook 静态站点
 pnpm lint         # ESLint 检查
 pnpm format       # Prettier 格式化
 pnpm test         # 运行测试

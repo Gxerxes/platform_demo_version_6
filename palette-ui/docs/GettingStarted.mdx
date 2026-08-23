@@ -1,0 +1,116 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Palette/Getting Started" />
+
+# Getting Started
+
+## Prerequisites
+
+| Tool | Version |
+|------|---------|
+| Node.js | >= 20 |
+| pnpm | >= 9 |
+
+## Installation
+
+```bash
+# In your business application
+pnpm add @palette/platform-sdk
+```
+
+Peer dependencies (install if not already present):
+
+```bash
+pnpm add react react-dom react-router-dom @mui/material @emotion/react @emotion/styled
+```
+
+## Create a Business Application
+
+### 1. Application Configuration
+
+```ts
+// palette.config.ts
+import type { PaletteAppConfig, PalettePlatformConfig } from '@palette/platform-sdk';
+
+export const paletteConfig: PaletteAppConfig = {
+  appName: 'Trading App',
+  version: '1.0.0',
+  theme: { mode: 'light', primaryColor: '#1565c0' },
+};
+
+export const platformConfig: PalettePlatformConfig = {
+  api: { baseUrl: '/api', timeout: 30000 },
+};
+```
+
+### 2. Navigation
+
+```tsx
+// navigation.tsx
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import type { NavItem } from '@palette/platform-sdk';
+
+export const navigation: NavItem[] = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    path: '/',
+    icon: <DashboardIcon />,
+    permission: 'dashboard:view',
+  },
+];
+```
+
+### 3. Application Entry
+
+```tsx
+// App.tsx
+import { PaletteApp } from '@palette/platform-sdk';
+import { Routes, Route } from 'react-router-dom';
+import { paletteConfig, platformConfig } from './palette.config';
+import { navigation } from './navigation';
+
+export function App() {
+  return (
+    <PaletteApp
+      config={paletteConfig}
+      platformConfig={platformConfig}
+      navigation={navigation}
+      permissions={userPermissions}
+    >
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+      </Routes>
+    </PaletteApp>
+  );
+}
+```
+
+### 4. Run Locally
+
+```bash
+pnpm dev
+```
+
+## What Palette Handles for You
+
+- Application Shell (Header, Sidebar, Breadcrumb)
+- Theme and Layout
+- Navigation with permission filtering
+- API Client with error handling
+- Global notifications
+- Permission guards
+- Event bus
+
+## What You Focus On
+
+- Business pages and features
+- Business API integration
+- Business-specific permissions
+- Business navigation items
+
+## Next Steps
+
+- Read [Best Practices](./?path=/docs/palette-best-practices--docs)
+- Explore components in the sidebar
+- Check the [API Reference](./?path=/docs/palette-api-reference--docs)

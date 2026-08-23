@@ -5,6 +5,17 @@ All notable changes to the Palette Platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-08-23
+
+### Added
+
+- Phase 3: Storybook & Documentation
+  - Storybook 8 with Vite builder and monorepo package aliases
+  - Component stories: PageTitle, ContentCard, AppHeader, AppBreadcrumb, MainLayout, PermissionGuard, PaletteShell, PaletteApp
+  - Developer Portal MDX docs: Introduction, Getting Started, Best Practices, Do & Don't, Migration Guide, API Reference
+  - `pnpm storybook` and `pnpm storybook:build` scripts
+  - CI pipeline builds Storybook static site
+
 ## [0.3.0] - 2026-08-23
 
 ### Added

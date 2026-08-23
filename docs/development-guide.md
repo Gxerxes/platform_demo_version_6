@@ -38,6 +38,8 @@ pnpm dev        # http://localhost:3000
 | 命令 | 说明 |
 |------|------|
 | `pnpm dev` | 启动 showcase-app 开发服务器 |
+| `pnpm storybook` | 启动 Storybook 开发者门户 (http://localhost:6006) |
+| `pnpm storybook:build` | 构建 Storybook 静态站点 |
 | `pnpm build` | 构建所有 workspace 包 |
 | `pnpm lint` | ESLint 检查 |
 | `pnpm lint:fix` | 自动修复 lint 问题 |

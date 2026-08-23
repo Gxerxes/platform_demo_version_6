@@ -1,0 +1,62 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Palette/Introduction" />
+
+# Palette Enterprise Platform
+
+Welcome to the **Palette Developer Portal** — the official documentation and component library
+for the Palette Enterprise UI Common Framework.
+
+## What is Palette?
+
+Palette is a company-level Enterprise Platform that provides a unified frontend UI framework
+and BFF foundation for Post-Trade business applications. Business teams build on top of
+Palette instead of reinventing common infrastructure.
+
+## Platform Components
+
+| Package | Description |
+|---------|-------------|
+| `@palette/platform-sdk` | Unified SDK entry point — start here |
+| `@palette/platform-shell` | Application Shell (Header + Sidebar + Layout) |
+| `@palette/platform-layout` | Layout components and Theme system |
+| `@palette/platform-navigation` | Navigation types and context |
+| `@palette/platform-security` | Permission and authorization |
+| `@palette/platform-api-client` | HTTP API client |
+| `@palette/platform-event` | Application event bus |
+| `@palette/platform-provider` | Platform Provider (Notification, Error handling) |
+| `@palette/ui-common` | Common UI components |
+
+## Architecture
+
+```
+Business Application
+        │
+        ▼
+   PaletteApp (SDK)
+        │
+   ┌────┴────┐
+   │         │
+PaletteShell  PlatformProvider
+   │         │
+ Layout    API / Events / Permissions
+```
+
+## Quick Example
+
+```tsx
+import { PaletteApp } from '@palette/platform-sdk';
+
+<PaletteApp
+  config={paletteConfig}
+  platformConfig={platformConfig}
+  navigation={navigation}
+  permissions={userPermissions}
+>
+  <Routes>
+    <Route path="/" element={<Dashboard />} />
+  </Routes>
+</PaletteApp>
+```
+
+Browse the sidebar to explore components, patterns, and API reference.

@@ -1,0 +1,108 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Palette/Do & Don't" />
+
+# Do & Don't
+
+## Authentication & Security
+
+### Do
+
+- Let Palette BFF handle OIDC, Session, and Token lifecycle (Phase 4+)
+- Use `PermissionGuard` for UI-level access control
+- Define permissions on navigation items
+- Use `credentials: 'include'` API calls (handled by ApiClient)
+
+### Don't
+
+- Implement login/logout flows in business apps
+- Store access tokens in localStorage
+- Bypass PermissionGuard with hardcoded role checks
+- Make direct fetch calls to business APIs (use ApiClient through BFF)
+
+## Layout & Navigation
+
+### Do
+
+```tsx
+// Configure navigation declaratively
+export const navigation: NavItem[] = [
+  { id: 'trades', label: 'Trades', path: '/trades', permission: 'trades:view' },
+];
+```
+
+```tsx
+// Use PageTitle for every page
+<PageTitle title="Trades" subtitle="Manage trade records" />
+```
+
+### Don't
+
+```tsx
+// Don't build custom headers or sidebars
+function MyCustomHeader() { ... }  // ❌
+
+// Don't hardcode navigation in components
+<Sidebar items={[{ label: 'Home', path: '/' }]} />  // ❌
+```
+
+## API Integration
+
+### Do
+
+```tsx
+const api = useApiClient();
+const trades = await api.get<Trade[]>('/trades');
+```
+
+### Don't
+
+```tsx
+// Don't use raw fetch
+const res = await fetch('/api/trades');  // ❌
+
+// Don't create per-feature axios instances
+const client = axios.create({ baseURL: '/api' });  // ❌
+```
+
+## State Management
+
+### Do
+
+- Use React state/hooks for component-level state
+- Use EventBus for cross-module platform events
+- Keep business state in feature modules
+
+### Don't
+
+- Duplicate platform state (auth, permissions, theme)
+- Create global stores for notification/theme (Palette provides these)
+
+## Styling
+
+### Do
+
+- Use MUI components with Palette theme
+- Use `sx` prop for minor layout adjustments
+- Use `ContentCard` for content grouping
+
+### Don't
+
+- Import and configure your own MUI ThemeProvider
+- Use inline styles for enterprise components
+- Override Palette layout CSS globally
+
+## Package Imports
+
+### Do
+
+```tsx
+import { PaletteApp, useApiClient, PageTitle } from '@palette/platform-sdk';
+```
+
+### Don't
+
+```tsx
+// Avoid deep imports in business apps
+import { AppHeader } from '@palette/platform-layout';  // ❌ (unless extending platform)
+```
