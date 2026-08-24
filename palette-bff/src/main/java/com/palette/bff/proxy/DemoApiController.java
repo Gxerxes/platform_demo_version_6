@@ -31,12 +31,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Tag(name = "Demo Business API", description = "Mock trading APIs for local development (palette.auth.mode=mock)")
 public class DemoApiController {
 
-    private final AtomicInteger tradeSequence = new AtomicInteger(4);
-    private final List<Map<String, Object>> trades = new ArrayList<>(List.of(
-            createTrade("TRD-001", "AAPL", "BUY", 1000, "Settled", "2026-08-20"),
-            createTrade("TRD-002", "MSFT", "SELL", 500, "Pending", "2026-08-22"),
-            createTrade("TRD-003", "GOOGL", "BUY", 200, "Settled", "2026-08-21")
-    ));
+    private final AtomicInteger tradeSequence = new AtomicInteger(31);
+    private final List<Map<String, Object>> trades = new ArrayList<>(createInitialTrades());
+
+    private static List<Map<String, Object>> createInitialTrades() {
+        List<Map<String, Object>> seed = new ArrayList<>();
+        String[] symbols = {"AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA", "META", "JPM"};
+        String[] sides = {"BUY", "SELL"};
+        String[] statuses = {"Settled", "Pending", "Cancelled"};
+
+        for (int i = 1; i <= 30; i++) {
+            seed.add(createTrade(
+                    "TRD-" + String.format("%03d", i),
+                    symbols[i % symbols.length],
+                    sides[i % sides.length],
+                    100 * (i % 20 + 1),
+                    statuses[i % statuses.length],
+                    LocalDate.now().minusDays(i % 14).toString()));
+        }
+        return seed;
+    }
 
     @GetMapping("/dashboard/summary")
     @Operation(summary = "Dashboard summary", description = "Aggregated trade statistics for the dashboard")

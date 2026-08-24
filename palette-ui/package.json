@@ -8,6 +8,7 @@
     "dev": "pnpm --filter @palette/showcase-app dev",
     "dev:trading": "pnpm --filter @palette/trading-app dev",
     "dev:settlement": "pnpm --filter @palette/settlement-app dev",
+    "dev:ag-grid-demo": "pnpm --filter @palette/ag-grid-demo-app dev",
     "create-app": "pnpm --filter create-palette-app build && node packages/create-palette-app/dist/cli.js",
     "build": "pnpm -r build",
     "lint": "eslint .",
