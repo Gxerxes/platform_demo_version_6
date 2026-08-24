@@ -5,64 +5,64 @@ Enterprise HTTP client SDK for Palette. Axios-based, framework-agnostic core; Re
 > **Languages:** [English](./README.en.md) · [简体中文](./README.md)  
 > Platform guide: [docs/api-client-guide.zh-CN.md](../../../docs/api-client-guide.zh-CN.md)
 
-## 架构
+## Architecture
 
 ```text
-业务应用 / 第三方应用
+Business / third-party application
         │ createApiClient(config)
         ▼
-mergeConfig（深合并，不 mutate 输入）
+mergeConfig (deep merge, inputs never mutated)
         ▼
-独立 Axios 实例
+Isolated Axios instance
         ├── Request ID / Metadata / Auth
-        ├── Consumer Interceptors
-        ├── Retry（幂等方法，可选）
-        ├── Error Normalization → ApiError
-        └── Lifecycle Hooks
+        ├── Consumer interceptors
+        ├── Retry (idempotent methods, optional)
+        ├── Error normalization → ApiError
+        └── Lifecycle hooks
         ▼
-        BFF / 外部 API
+        BFF / external APIs
 ```
 
-**职责边界**
+**Responsibility boundaries**
 
-| 层 | 职责 |
+| Layer | Responsibility |
 |---|---|
-| `client/`、`config/`、`interceptors/` 等 | 纯 HTTP SDK，无 React、无 EventBus |
-| `react/` | `ApiClientProvider`、Query 集成、EventBus 桥接 |
+| `client/`, `config/`, `interceptors/`, etc. | Pure HTTP SDK — no React, no EventBus |
+| `react/` | `ApiClientProvider`, Query integration, EventBus bridge |
 
-## 目录结构
+## Project structure
 
 ```text
 src/
-├── client/           ApiClient、createApiClient
-├── config/           ApiClientConfig、defaults、mergeConfig
-├── interceptors/     请求 / 响应 / 错误管道
-├── auth/             AuthConfig（依赖注入）
-├── error/            ApiError、ErrorCode、normalizeError
-├── retry/            重试策略与拦截器
-├── observability/    ApiLogger、日志脱敏
-├── hooks/            生命周期 hooks（只观察，不修改请求）
-├── utils/            requestId 生成
-├── react/            ApiClientProvider、PlatformQueryClientProvider
-├── pagination.ts     分页类型与工具
+├── client/           ApiClient, createApiClient
+├── config/           ApiClientConfig, defaults, mergeConfig
+├── interceptors/     Request / response / error pipeline
+├── auth/             AuthConfig (dependency injection)
+├── error/            ApiError, ErrorCode, normalizeError
+├── retry/            Retry policy and interceptor
+├── observability/    ApiLogger, log sanitization
+├── hooks/            Lifecycle hooks (observe only, no mutation)
+├── utils/            requestId generator
+├── react/            ApiClientProvider, PlatformQueryClientProvider
+├── pagination.ts     Pagination types and utilities
 ├── createQueryClient.ts
 ├── queryKeys.ts
-└── index.ts          唯一公开入口
+└── index.ts          Single public entry point
 ```
 
-## 安装
+## Installation
 
-Monorepo 内 workspace 依赖：
+Workspace dependency inside the monorepo:
 
 ```bash
 pnpm add @palette/platform-api-client
 ```
 
-Peer：`react` ^18（仅 React Provider / Query Hook 需要）。
+Peer dependency: `react` ^18 (required only for React Provider / Query hooks).
 
-## 快速开始
+## Quick start
 
-### 独立客户端（推荐：应用层单例）
+### Standalone client (recommended: app-level singleton)
 
 ```typescript
 // apps/trading-app/src/platform/apiClient.ts
@@ -80,12 +80,12 @@ export const apiClient = createApiClient({
   },
 });
 
-// 业务代码
+// Business code
 import { apiClient } from '@/platform/apiClient';
 const user = await apiClient.get<User>('/users/me');
 ```
 
-### Palette 应用（Provider）
+### Palette application (Provider)
 
 ```tsx
 import { ApiClientProvider, useApiClient } from '@palette/platform-api-client';
@@ -100,30 +100,30 @@ const api = useApiClient();
 const trades = await api.get<Trade[]>('/trades');
 ```
 
-EventBus（`API_REQUEST` / `API_RESPONSE` / `ERROR` / `AUTH_EXPIRED`）仅在 `react/ApiClientProvider` 中通过 hooks 桥接，核心层不依赖 EventBus。
+EventBus events (`API_REQUEST`, `API_RESPONSE`, `ERROR`, `AUTH_EXPIRED`) are bridged via hooks in `react/ApiClientProvider` only. The core layer does not depend on EventBus.
 
-## 配置
+## Configuration
 
-`mergeConfig` 将应用配置深合并到平台默认值，**不会修改传入对象**。
+`mergeConfig` deep-merges application config onto platform defaults. **Input objects are never mutated.**
 
-### 默认值
+### Defaults
 
-| 字段 | 默认值 | 说明 |
-|------|--------|------|
-| `baseURL` | `''` | API 根路径 |
-| `timeout` | `10000` | 超时（ms） |
-| `withCredentials` | `true` | 发送 Cookie（BFF 会话） |
-| `auth.enabled` | `true` | 有 token 时附加 Bearer |
-| `retry.enabled` | `false` | 重试默认关闭 |
-| `retry.retries` | `0` | 最大重试次数 |
-| `retry.retryDelay` | `500` | 指数退避基数（ms） |
-| `retry.retryOn` | `502,503,504` | 可重试状态码 |
-| `retry.retryMethods` | `GET,HEAD,OPTIONS,PUT,DELETE` | 幂等方法 |
-| `requestId.enabled` | `true` | 自动生成 Request ID |
-| `requestId.headerName` | `X-Request-ID` | 请求 ID Header |
-| `requestId.correlationHeaderName` | `X-Correlation-ID` | 关联 ID Header |
+| Field | Default | Description |
+|-------|---------|-------------|
+| `baseURL` | `''` | API base path |
+| `timeout` | `10000` | Timeout (ms) |
+| `withCredentials` | `true` | Send cookies (BFF sessions) |
+| `auth.enabled` | `true` | Attach Bearer token when available |
+| `retry.enabled` | `false` | Retry disabled by default |
+| `retry.retries` | `0` | Max retry attempts |
+| `retry.retryDelay` | `500` | Exponential backoff base (ms) |
+| `retry.retryOn` | `502,503,504` | Retriable status codes |
+| `retry.retryMethods` | `GET,HEAD,OPTIONS,PUT,DELETE` | Idempotent methods |
+| `requestId.enabled` | `true` | Auto-generate request ID |
+| `requestId.headerName` | `X-Request-ID` | Request ID header |
+| `requestId.correlationHeaderName` | `X-Correlation-ID` | Correlation ID header |
 
-### 完整配置示例
+### Full configuration example
 
 ```typescript
 import { createApiClient } from '@palette/platform-api-client';
@@ -166,7 +166,7 @@ const apiClient = createApiClient({
 });
 ```
 
-## HTTP 方法
+## HTTP methods
 
 ```typescript
 await apiClient.get<T>(url, config?);
@@ -178,7 +178,7 @@ await apiClient.request<T>({ method, url, data?, ...config });
 await apiClient.getPage<T>(url, pageRequest?, config?);
 ```
 
-`ApiRequestConfig`：
+`ApiRequestConfig`:
 
 ```typescript
 interface ApiRequestConfig {
@@ -189,13 +189,13 @@ interface ApiRequestConfig {
 }
 ```
 
-## 拦截器管道
+## Interceptor pipeline
 
 **Request**
 
 1. Request ID
-2. Metadata（`X-Application-ID`、`X-Client-Version`）
-3. Auth（Bearer token）
+2. Metadata (`X-Application-ID`, `X-Client-Version`)
+3. Auth (Bearer token)
 4. Consumer request interceptors
 5. `beforeRequest` hook
 
@@ -207,22 +207,22 @@ interface ApiRequestConfig {
 
 **Error**
 
-1. Retry（启用时，仅幂等方法）
-2. 归一化为 `ApiError`
-3. `onUnauthorized`（401）
+1. Retry (when enabled, idempotent methods only)
+2. Normalize to `ApiError`
+3. `onUnauthorized` (401)
 4. Consumer error interceptors
 5. `onError` hook
 
-**Interceptors vs Hooks**
+**Interceptors vs hooks**
 
 | | Interceptors | Hooks |
 |---|---|---|
-| 用途 | 修改请求/响应/错误管道 | 观察生命周期 |
-| 失败影响 | 可中断请求 | 隔离捕获，不影响请求 |
+| Purpose | Modify request/response/error pipeline | Observe lifecycle events |
+| Failure impact | Can abort the request | Isolated — does not break requests |
 
-## 认证
+## Authentication
 
-通过配置注入，**不依赖** `platform-security`、Redux、Zustand：
+Injected via configuration. **No dependency** on `platform-security`, Redux, or Zustand:
 
 ```typescript
 auth: {
@@ -232,14 +232,14 @@ auth: {
 }
 ```
 
-- 有 token 时自动附加 `Authorization: Bearer <token>`
-- 消费者已设置的 `Authorization` **不会被覆盖**
-- BFF Cookie 会话：省略 `getAccessToken`，保持 `withCredentials: true`
-- 外部 API：`auth: { enabled: false }`
+- When a token is available, `Authorization: Bearer <token>` is attached automatically
+- An existing `Authorization` header set by the consumer is **never overwritten**
+- BFF cookie sessions: omit `getAccessToken`, keep `withCredentials: true`
+- External APIs: `auth: { enabled: false }`
 
-客户端**不存储 token**，**不在拦截器中做页面跳转**。
+The client **does not store tokens** and **does not redirect the browser** from interceptors.
 
-## 错误处理
+## Error handling
 
 ```typescript
 import { ApiError, ErrorCode, normalizeError } from '@palette/platform-api-client';
@@ -250,20 +250,20 @@ try {
   if (error instanceof ApiError) {
     console.log(error.code);       // ErrorCode.UNAUTHORIZED
     console.log(error.status);     // 401
-    console.log(error.requestId);  // 链路追踪
-    console.log(error.details);    // 响应体
+    console.log(error.requestId);  // distributed tracing
+    console.log(error.details);    // response body
   }
 }
 
-// 非 ApiError 场景（如 ErrorBoundary）
+// Non-ApiError cases (e.g. ErrorBoundary)
 const plain = normalizeError(error); // { code, message, status?, requestId?, details? }
 ```
 
-支持的错误码：`UNAUTHORIZED`、`FORBIDDEN`、`NOT_FOUND`、`REQUEST_TIMEOUT`、`TOO_MANY_REQUESTS`、`INTERNAL_SERVER_ERROR`、`BAD_GATEWAY`、`SERVICE_UNAVAILABLE`、`NETWORK_ERROR` 等（见 `ErrorCode`）。
+Supported codes include `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `REQUEST_TIMEOUT`, `TOO_MANY_REQUESTS`, `INTERNAL_SERVER_ERROR`, `BAD_GATEWAY`, `SERVICE_UNAVAILABLE`, `NETWORK_ERROR`, and more (see `ErrorCode`).
 
-## 重试
+## Retry
 
-默认关闭。`POST` 不在默认重试方法内。
+Disabled by default. `POST` is not in the default retriable methods.
 
 ```typescript
 retry: {
@@ -274,16 +274,16 @@ retry: {
 }
 ```
 
-不重试：`401`、`403`、`404`。
+Never retried: `401`, `403`, `404`.
 
-## 分页
+## Pagination
 
 ```typescript
 import { createQueryKeyFactory, usePaginatedQuery } from '@palette/platform-api-client';
 
 export const tradeKeys = createQueryKeyFactory('trades');
 
-// 直接调用
+// Direct call
 const page = await apiClient.getPage<Trade>('/trades', { page: 1, pageSize: 20 });
 
 // TanStack Query
@@ -297,9 +297,9 @@ function useTradesPage() {
 }
 ```
 
-`normalizePageResponse` 兼容 Palette 标准分页、Spring Page、普通数组。
+`normalizePageResponse` supports Palette page shape, Spring Page, and plain arrays.
 
-## 多实例
+## Multiple instances
 
 ```typescript
 export const bffClient = createApiClient({ baseURL: '/api' });
@@ -311,15 +311,15 @@ export const externalClient = createApiClient({
 });
 ```
 
-每个实例配置与拦截器相互隔离。
+Each instance has isolated configuration and interceptors.
 
-## 可观测性
+## Observability
 
 ```typescript
 createApiClient({ logger: console });
 ```
 
-日志自动脱敏：`Authorization`、Cookie、token、password 等敏感字段不会输出。
+Logs are automatically sanitized — `Authorization`, cookies, tokens, passwords, and other sensitive fields are redacted.
 
 ## TanStack Query
 
@@ -331,23 +331,23 @@ import {
 } from '@palette/platform-api-client';
 ```
 
-Palette 应用中通常由 `PalettePlatformProvider` 统一挂载，业务侧直接使用 `useQuery`（从 `@palette/platform-sdk` 导出）。
+In Palette apps, `PalettePlatformProvider` typically mounts the Query client. Business code uses `useQuery` exported from `@palette/platform-sdk`.
 
-## 公开 API
+## Public API
 
-仅从包根路径导入：
+Import only from the package root:
 
 ```typescript
-// 核心
+// Core
 createApiClient, ApiClient, mergeConfig, DEFAULT_API_CLIENT_CONFIG
 ApiError, ErrorCode, normalizeError
 
-// 类型
+// Types
 ApiClientConfig, ApiRequestConfig, AuthConfig, PageRequest, PageResponse
 ApiRequestInterceptor, ApiResponseInterceptor, ApiErrorInterceptor
 BeforeRequestHook, AfterResponseHook, OnErrorHook
 
-// 分页
+// Pagination
 normalizePageResponse, resolvePageRequest, toPageQueryParams, createQueryKeyFactory
 DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
@@ -357,19 +357,19 @@ PlatformQueryClientProvider, usePlatformQueryClient
 createQueryClient, usePaginatedQuery
 ```
 
-**不要**从 `@palette/platform-api-client/src/...` 等内部路径导入。
+Do **not** import from internal paths such as `@palette/platform-api-client/src/...`.
 
-## 安全
+## Security
 
-1. Token 不存储在客户端内部，通过 `getAccessToken` 动态获取
-2. 不记录 token、Cookie、密码
-3. `withCredentials` 可按实例配置
-4. 外部 API 应显式 `auth: { enabled: false }`
+1. Tokens are never stored inside the client — retrieved dynamically via `getAccessToken`
+2. Tokens, cookies, and passwords are never logged
+3. `withCredentials` is configurable per instance
+4. External APIs should explicitly set `auth: { enabled: false }`
 
-## 开发
+## Development
 
 ```bash
 pnpm --filter @palette/platform-api-client build
 pnpm --filter @palette/platform-api-client typecheck
-pnpm test   # 在 palette-ui 根目录运行全量测试
+pnpm test   # run full test suite from palette-ui root
 ```
