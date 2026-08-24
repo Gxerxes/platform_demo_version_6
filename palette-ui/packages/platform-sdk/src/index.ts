@@ -109,19 +109,28 @@ export {
   createApiClient,
   createQueryClient,
   createQueryKeyFactory,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
   isPaletteError,
   normalizeError,
+  normalizePageResponse,
   PlatformQueryClientProvider,
+  resolvePageRequest,
+  toPageQueryParams,
   useApiClient,
+  usePaginatedQuery,
   usePlatformQueryClient,
 } from '@palette/platform-api-client';
 export type {
   ApiClientConfig,
   ApiClientProviderProps,
   HttpMethod,
+  PageRequest,
+  PageResponse,
   PaletteError,
   PlatformQueryClientProviderProps,
   RequestOptions,
+  UsePaginatedQueryOptions,
 } from '@palette/platform-api-client';
 
 // ── TanStack Query ───────────────────────────────────────────

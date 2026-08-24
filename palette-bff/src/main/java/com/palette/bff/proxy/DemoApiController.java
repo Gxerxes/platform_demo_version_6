@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,9 +54,31 @@ public class DemoApiController {
     }
 
     @GetMapping("/trades")
-    @Operation(summary = "List trades", description = "Returns all mock trades")
-    public List<Map<String, Object>> trades() {
-        return List.copyOf(trades);
+    @Operation(summary = "List trades", description = "Returns mock trades. Supports optional page/pageSize pagination.")
+    public Object trades(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pageSize) {
+        if (page == null && pageSize == null) {
+            return List.copyOf(trades);
+        }
+
+        int resolvedPage = page != null && page > 0 ? page : 1;
+        int resolvedPageSize = pageSize != null && pageSize > 0 ? pageSize : 20;
+        int total = trades.size();
+        int totalPages = total == 0 ? 0 : (int) Math.ceil((double) total / resolvedPageSize);
+        int fromIndex = Math.min((resolvedPage - 1) * resolvedPageSize, total);
+        int toIndex = Math.min(fromIndex + resolvedPageSize, total);
+        List<Map<String, Object>> items = trades.subList(fromIndex, toIndex);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("items", items);
+        response.put("page", resolvedPage);
+        response.put("pageSize", resolvedPageSize);
+        response.put("total", total);
+        response.put("totalPages", totalPages);
+        response.put("hasNext", totalPages > 0 && resolvedPage < totalPages);
+        response.put("hasPrevious", resolvedPage > 1 && totalPages > 0);
+        return response;
     }
 
     @PostMapping("/trades")

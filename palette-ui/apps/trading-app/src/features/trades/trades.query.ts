@@ -1,21 +1,13 @@
-import { useQuery, useApiClient } from '@palette/platform-sdk';
+import { usePaginatedQuery, useApiClient } from '@palette/platform-sdk';
 import { tradesService } from './api';
 import { tradeKeys } from './trades.keys';
 
-export function useTrades() {
+export function useTradesPage(initialPageSize = 10) {
   const api = useApiClient();
 
-  return useQuery({
-    queryKey: tradeKeys.lists(),
-    queryFn: () => tradesService.getTrades(api),
-  });
-}
-
-export function useDashboardSummary() {
-  const api = useApiClient();
-
-  return useQuery({
-    queryKey: tradeKeys.list({ scope: 'dashboard-summary' }),
-    queryFn: () => tradesService.getDashboardSummary(api),
+  return usePaginatedQuery({
+    queryKey: tradeKeys.pageLists(),
+    queryFn: (pageRequest) => tradesService.getTradesPage(api, pageRequest),
+    initialPageSize,
   });
 }

@@ -119,6 +119,70 @@ export function useTrades() {
 
 **Query Key 约定**：业务域 Key 放在应用内（如 `features/trades/trades.keys.ts`），平台只提供 `createQueryKeyFactory` 工具，不包含 `users`、`trades` 等业务概念。
 
+`createQueryKeyFactory` 同时提供分页 Key：
+
+```typescript
+tradeKeys.pageLists()                        // ['trades', 'page-list']
+tradeKeys.pageList({ page: 2, pageSize: 10 }) // ['trades', 'page-list', { page: 2, pageSize: 10 }]
+```
+
+## 分页
+
+平台提供统一的分页请求/响应模型，业务应用无需自行拼接 `page` / `pageSize` 或解析多种后端格式。
+
+### 类型
+
+```typescript
+interface PageRequest {
+  page?: number;      // 从 1 开始，默认 1
+  pageSize?: number;  // 默认 20
+}
+
+interface PageResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+```
+
+`normalizePageResponse` 自动兼容：
+
+- Palette 标准 `{ items, page, pageSize, total, ... }`
+- Spring Page `{ content, number, size, totalElements, ... }`（`number` 为 0-based，会自动转为 1-based）
+- 普通数组（作为单页结果包装）
+
+### API Client
+
+```typescript
+const page = await api.getPage<Trade>('/trades', { page: 1, pageSize: 10 });
+// page.items, page.total, page.hasNext ...
+```
+
+### TanStack Query
+
+使用 `usePaginatedQuery` 管理页码状态，并在翻页时保留上一页数据：
+
+```typescript
+export function useTradesPage() {
+  const api = useApiClient();
+  return usePaginatedQuery({
+    queryKey: tradeKeys.pageLists(),
+    queryFn: (pageRequest) => api.getPage<Trade>('/trades', pageRequest),
+    initialPageSize: 10,
+  });
+}
+
+// 组件内
+const { items, page, pageSize, total, setPage, setPageSize, hasNext, hasPrevious } = useTradesPage();
+```
+
+BFF 约定：当请求携带 `page` / `pageSize` 查询参数时，返回 `PageResponse` 结构；未携带时仍可返回普通数组（向后兼容）。
+
+
 推荐目录结构：
 
 ```
@@ -169,5 +233,5 @@ import { createApiClient, createQueryClient, resolvePlatformConfig } from '@pale
 
 - `src/palette.config.ts` — 平台配置
 - `src/features/trades/trades.keys.ts` — Query Key
-- `src/features/trades/trades.query.ts` — `useTrades`
-- `src/pages/TradesPage.tsx` — 页面消费
+- `src/features/trades/trades.query.ts` — `useTradesPage`（分页）
+- `src/pages/TradesPage.tsx` — 分页表格消费

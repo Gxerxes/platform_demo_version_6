@@ -1,4 +1,4 @@
-import type { ApiClient } from '@palette/platform-sdk';
+import type { ApiClient, PageRequest, PageResponse } from '@palette/platform-sdk';
 import type {
   CreateTradeRequest,
   DailyReport,
@@ -14,6 +14,10 @@ export const tradesService = {
 
   getTrades(api: ApiClient) {
     return api.get<Trade[]>('/trades');
+  },
+
+  getTradesPage(api: ApiClient, pageRequest?: PageRequest) {
+    return api.getPage<Trade>('/trades', pageRequest);
   },
 
   createTrade(api: ApiClient, payload: CreateTradeRequest) {
@@ -33,6 +37,7 @@ export function createTradingApi(api: ApiClient) {
   return {
     getDashboardSummary: () => tradesService.getDashboardSummary(api),
     getTrades: () => tradesService.getTrades(api),
+    getTradesPage: (pageRequest?: PageRequest) => tradesService.getTradesPage(api, pageRequest),
     createTrade: (payload: CreateTradeRequest) => tradesService.createTrade(api, payload),
     getSettlements: () => tradesService.getSettlements(api),
     getDailyReport: () => tradesService.getDailyReport(api),
@@ -40,3 +45,4 @@ export function createTradingApi(api: ApiClient) {
 }
 
 export type TradingApi = ReturnType<typeof createTradingApi>;
+export type { PageResponse };

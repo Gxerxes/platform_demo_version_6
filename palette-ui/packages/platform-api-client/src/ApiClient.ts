@@ -4,6 +4,12 @@ import { PaletteEvents } from '@palette/platform-event';
 import { createAxiosInstance } from './internal/createAxiosInstance';
 import { normalizeAxiosError } from './internal/normalizeAxiosError';
 import { ApiError } from './errors';
+import {
+  normalizePageResponse,
+  toPageQueryParams,
+  type PageRequest,
+  type PageResponse,
+} from './pagination';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -35,6 +41,19 @@ export class ApiClient {
 
   async get<T>(path: string, options?: RequestOptions): Promise<T> {
     return this.request<T>('GET', path, undefined, options);
+  }
+
+  async getPage<T>(
+    path: string,
+    pageRequest?: PageRequest,
+    options?: RequestOptions,
+  ): Promise<PageResponse<T>> {
+    const params = {
+      ...options?.params,
+      ...toPageQueryParams(pageRequest),
+    };
+    const data = await this.get<unknown>(path, { ...options, params });
+    return normalizePageResponse<T>(data, pageRequest);
   }
 
   async post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {

@@ -5,6 +5,9 @@ export function createQueryKeyFactory<T extends string>(root: T) {
     all,
     lists: () => [...all, 'list'] as const,
     list: (params?: unknown) => [...all, 'list', params] as const,
+    pageLists: () => [...all, 'page-list'] as const,
+    pageList: (pageRequest?: unknown, filters?: unknown) =>
+      [...all, 'page-list', pageRequest, filters] as const,
     details: () => [...all, 'detail'] as const,
     detail: (id: string) => [...all, 'detail', id] as const,
   };
