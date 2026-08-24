@@ -1,17 +1,30 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, Box, Stack, Typography } from '@mui/material';
+import { useMemo } from 'react';
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Stack,
+  TablePagination,
+  Typography,
+} from '@mui/material';
 import { AgGridReact } from 'ag-grid-react';
-import type { ColDef, GridReadyEvent, IDatasource, IGetRowsParams } from 'ag-grid-community';
-import { ApiError, ContentCard, PageTitle, useApiClient } from '@palette/platform-sdk';
-import { tradesService } from '../features/trades/trades.service';
+import type { ColDef } from 'ag-grid-community';
+import { ApiError, ContentCard, PageTitle } from '@palette/platform-sdk';
+import { useTradesGrid } from '../features/trades/trades.query';
 import type { Trade } from '../features/trades/types';
 
-const PAGE_SIZE = 10;
-
 export function TradesGridPage() {
-  const api = useApiClient();
-  const gridRef = useRef<AgGridReact<Trade>>(null);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    items,
+    total,
+    page,
+    pageSize,
+    setPage,
+    setPageSize,
+    isLoading,
+    isFetching,
+    error,
+  } = useTradesGrid(5);
 
   const columnDefs = useMemo<ColDef<Trade>[]>(
     () => [
@@ -46,80 +59,85 @@ export function TradesGridPage() {
     [],
   );
 
-  const onGridReady = useCallback(
-    (event: GridReadyEvent<Trade>) => {
-      const dataSource: IDatasource = {
-        getRows: async (params: IGetRowsParams) => {
-          const blockSize = params.endRow - params.startRow;
-          const page = Math.floor(params.startRow / blockSize) + 1;
-
-          try {
-            setError(null);
-            const result = await tradesService.getTradesPage(api, {
-              page,
-              pageSize: blockSize,
-            });
-            params.successCallback(result.items, result.total);
-          } catch (err) {
-            setError(err instanceof ApiError ? err.message : 'Failed to load trades');
-            params.failCallback();
-          }
-        },
-      };
-
-      event.api.setGridOption('datasource', dataSource);
-    },
-    [api],
-  );
+  const pageStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const pageEnd = Math.min(page * pageSize, total);
 
   return (
     <>
       <PageTitle
         title="Trades Grid"
-        subtitle="Server-side pagination: AG Grid Infinite Row Model + platform-api-client getPage()"
+        subtitle="usePaginatedQuery + api.getPage() + AG Grid — 服务端分页"
       />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {error instanceof ApiError ? error.message : 'Failed to load trades'}
+        </Alert>
+      )}
+
+      {total > 0 && total <= 5 && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          当前仅 {total} 条数据。请<strong>重启 BFF</strong> 以加载 30 条 mock 数据并体验完整分页（共 6 页）。
         </Alert>
       )}
 
       <ContentCard noPadding>
-        <Stack spacing={1} sx={{ p: 2, pb: 0 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ px: 2, pt: 2, pb: 1 }}
+        >
           <Typography variant="body2" color="text.secondary">
-            Data source: BFF <code>GET /api/trades?page=&amp;pageSize=</code> via{' '}
-            <code>api.getPage()</code>
+            BFF <code>GET /api/trades?page={page}&amp;pageSize={pageSize}</code>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {total > 0 ? `${pageStart}–${pageEnd} / ${total} 条` : '无数据'}
+            {isFetching && !isLoading ? ' · 刷新中…' : ''}
           </Typography>
         </Stack>
 
         <Box
           sx={{
-            height: 520,
+            height: 420,
             width: '100%',
-            p: 2,
-            pt: 1,
+            px: 2,
+            position: 'relative',
             '& .cell-buy': { color: '#2e7d32', fontWeight: 600 },
             '& .cell-sell': { color: '#c62828', fontWeight: 600 },
           }}
           className="ag-theme-quartz"
         >
-          <AgGridReact<Trade>
-            ref={gridRef}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            rowModelType="infinite"
-            cacheBlockSize={PAGE_SIZE}
-            maxBlocksInCache={5}
-            pagination
-            paginationPageSize={PAGE_SIZE}
-            paginationPageSizeSelector={[5, 10, 20]}
-            onGridReady={onGridReady}
-            animateRows
-            overlayLoadingTemplate='<span class="ag-overlay-loading-center">Loading trades...</span>'
-            overlayNoRowsTemplate='<span class="ag-overlay-no-rows-center">No trades found</span>'
-          />
+          {isLoading ? (
+            <Stack alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
+              <CircularProgress />
+            </Stack>
+          ) : (
+            <AgGridReact<Trade>
+              rowData={items}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              animateRows
+              suppressCellFocus
+              overlayNoRowsTemplate='<span class="ag-overlay-no-rows-center">No trades found</span>'
+            />
+          )}
         </Box>
+
+        <TablePagination
+          component="div"
+          count={total}
+          page={Math.max(0, page - 1)}
+          onPageChange={(_, nextPage) => setPage(nextPage + 1)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => setPageSize(Number(event.target.value))}
+          rowsPerPageOptions={[5, 10, 20]}
+          disabled={isFetching}
+          labelDisplayedRows={({ from, to, count }) =>
+            count === -1 ? `${from}–${to}` : `${from}–${to} / 共 ${count} 条`
+          }
+          labelRowsPerPage="每页条数"
+        />
       </ContentCard>
     </>
   );

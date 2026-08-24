@@ -49,5 +49,7 @@ PageResponse { items, total, page, pageSize, ... }
 ## Notes
 
 - Uses `PaletteApp` for auth and API client wiring (same as other Palette apps).
-- BFF seeds **30 mock trades** for pagination testing.
-- Change page size via AG Grid pagination selector (5 / 10 / 20).
+- BFF seeds **30 mock trades** on startup for pagination testing.
+- Default page size is **5** (6 pages with 30 records).
+- **If you only see 3 rows:** restart the BFF so it reloads the 30-trade seed data.
+- Pagination uses `usePaginatedQuery` from `@palette/platform-api-client` with MUI `TablePagination`.
