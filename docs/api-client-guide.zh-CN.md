@@ -222,8 +222,32 @@ export interface ApiError {
 仅在测试或特殊场景下可直接使用工厂函数：
 
 ```typescript
-import { createApiClient, createQueryClient, resolvePlatformConfig } from '@palette/platform-sdk';
+import { createApiClient, createQueryClient, resolvePlatformConfig, ErrorCode } from '@palette/platform-sdk';
 ```
+
+### 独立 API Client（第三方 / 多 BFF 场景）
+
+```typescript
+// apps/trading-app/src/platform/apiClient.ts
+import { createApiClient } from '@palette/platform-sdk';
+
+export const apiClient = createApiClient({
+  baseURL: import.meta.env.VITE_BFF_BASE_URL,
+  timeout: 15_000,
+  withCredentials: true,
+  auth: {
+    enabled: true,
+    getAccessToken: () => authService.getAccessToken(),
+    onUnauthorized: () => authService.logout(),
+  },
+  retry: { enabled: true, retries: 2 },
+  requestId: { enabled: true },
+});
+```
+
+业务代码统一 `import { apiClient } from '@/platform/apiClient'`，不要在各处重复 `createApiClient`。
+
+完整 SDK 文档见 `packages/platform-api-client/README.md`。
 
 常规业务开发应始终通过 `PaletteApp` + `useApiClient` + `useQuery`。
 

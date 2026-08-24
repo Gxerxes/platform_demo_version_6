@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { QueryClientProvider as TanStackQueryClientProvider } from '@tanstack/react-query';
 import type { PalettePlatformConfig } from '@palette/platform-config';
-import { createQueryClient } from './createQueryClient';
+import { createQueryClient } from '../createQueryClient';
 
 const PlatformQueryClientContext = createContext<ReturnType<typeof createQueryClient> | null>(
   null,

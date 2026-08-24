@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery, type QueryKey, type UseQueryOptions } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
-import type { PageRequest, PageResponse } from './pagination';
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, resolvePageRequest } from './pagination';
+import type { PageRequest, PageResponse } from '../pagination';
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, resolvePageRequest } from '../pagination';
 
 export interface UsePaginatedQueryOptions<TData, TError = Error> extends Omit<
   UseQueryOptions<PageResponse<TData>, TError, PageResponse<TData>, QueryKey>,
