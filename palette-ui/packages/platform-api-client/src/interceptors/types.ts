@@ -1,5 +1,4 @@
 import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import type { ApiError } from '../error/ApiError';
 
 export type ApiRequestInterceptor = (
   config: InternalAxiosRequestConfig,
@@ -20,11 +19,11 @@ export interface ApiRequestContext {
 }
 
 export interface ApiResponseContext<T = unknown> {
+  method: string;
+  url: string;
   status: number;
   data: T;
   headers: Record<string, unknown>;
   requestId?: string;
   durationMs?: number;
 }
-
-export type { ApiError as ApiErrorContext };

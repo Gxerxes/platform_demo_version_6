@@ -56,7 +56,7 @@ import type { PalettePlatformConfig } from '@palette/platform-sdk';
 
 export const platformConfig: PalettePlatformConfig = {
   api: {
-    baseUrl: '/api',
+    baseURL: '/api',
     timeout: 30_000,
     withCredentials: true,
   },

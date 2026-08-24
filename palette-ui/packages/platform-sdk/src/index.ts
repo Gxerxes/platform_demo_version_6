@@ -113,7 +113,6 @@ export {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
   ErrorCode,
-  isPaletteError,
   mergeConfig,
   normalizeError,
   normalizePageResponse,
@@ -128,13 +127,12 @@ export type {
   ApiClientConfig,
   ApiClientProviderProps,
   ApiRequestConfig,
-  AuthProvider as ApiAuthProvider,
+  AuthConfig,
   HttpMethod,
+  NormalizedError,
   PageRequest,
   PageResponse,
-  PaletteError,
   PlatformQueryClientProviderProps,
-  RequestOptions,
   UsePaginatedQueryOptions,
 } from '@palette/platform-api-client';
 

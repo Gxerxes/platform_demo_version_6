@@ -3,9 +3,7 @@ import type { ApiError } from '../error/ApiError';
 import type { ResolvedApiClientConfig } from '../config/ApiClientConfig';
 
 export type BeforeRequestHook = (context: ApiRequestContext) => void | Promise<void>;
-export type AfterResponseHook = <T>(
-  context: ApiResponseContext<T>,
-) => void | Promise<void>;
+export type AfterResponseHook = <T>(context: ApiResponseContext<T>) => void | Promise<void>;
 export type OnErrorHook = (error: ApiError) => void | Promise<void>;
 
 export async function runBeforeRequestHook(
@@ -42,13 +40,13 @@ export async function runOnErrorHook(
   config: ResolvedApiClientConfig,
   error: ApiError,
 ): Promise<void> {
-  if (config.hooks?.onError) {
-    try {
-      await config.hooks.onError(error);
-    } catch (hookError) {
-      config.logger?.warn?.('onError hook failed', { error: hookError });
-    }
+  if (!config.hooks?.onError) {
+    return;
   }
 
-  config.onError?.(error);
+  try {
+    await config.hooks.onError(error);
+  } catch (hookError) {
+    config.logger?.warn?.('onError hook failed', { error: hookError });
+  }
 }

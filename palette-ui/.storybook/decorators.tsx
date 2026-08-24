@@ -15,7 +15,7 @@ export const mockAppConfig: PaletteAppConfig = {
 };
 
 export const mockPlatformConfig: PalettePlatformConfig = {
-  api: { baseUrl: '/api', timeout: 30000 },
+  api: { baseURL: '/api', timeout: 30000 },
 };
 
 export const mockNavigation: NavItem[] = [

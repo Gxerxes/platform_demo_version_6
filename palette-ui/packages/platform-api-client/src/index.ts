@@ -1,40 +1,26 @@
 export { createApiClient } from './client/createApiClient';
 export { ApiClient } from './client/ApiClient';
+
+export type { ApiClientConfig, AppMetadata, ResolvedApiClientConfig } from './config/ApiClientConfig';
+export type { ApiRequestConfig, ApiResponse, HttpMethod } from './client/types';
+export type { AuthConfig } from './auth/types';
 export type {
-  ApiClientConfig,
-  ApiRequestConfig,
   ApiRequestInterceptor,
-  ApiResponse,
   ApiResponseInterceptor,
   ApiErrorInterceptor,
-  AuthConfig,
-  AuthProvider,
-  HttpMethod,
-  RequestOptions,
-  ResolvedApiClientConfig,
-  RetryConfig,
-  AfterResponseHook,
-  BeforeRequestHook,
-  OnErrorHook,
-  ApiLogger,
-} from './client/types';
+} from './interceptors/types';
+export type { BeforeRequestHook, AfterResponseHook, OnErrorHook } from './hooks/hooks';
+export type { ApiLogger } from './observability/types';
+export type { RetryConfig } from './retry/RetryPolicy';
+export type { PageRequest, PageResponse } from './pagination';
 
 export { DEFAULT_API_CLIENT_CONFIG } from './config/ApiClientDefaults';
 export { mergeConfig } from './config/mergeConfig';
 
-export { ErrorCode } from './error/ErrorCode';
 export { ApiError } from './error/ApiError';
-export { normalizeAxiosError, normalizeError, isPaletteError } from './error/normalizeError';
-export type { ApiErrorOptions, PaletteError } from './error/types';
-
-export { sanitizeMetadata, createSafeLogger } from './observability/types';
-export type { RequestMetricEvent, RequestMetrics } from './observability/types';
-
-export {
-  shouldRetryRequest,
-  calculateRetryDelay,
-  DEFAULT_RETRY_METHODS,
-} from './retry/RetryPolicy';
+export { ErrorCode } from './error/ErrorCode';
+export { normalizeError } from './error/normalizeError';
+export type { NormalizedError } from './error/types';
 
 export { createQueryClient } from './createQueryClient';
 export { createQueryKeyFactory } from './queryKeys';
@@ -45,7 +31,6 @@ export {
   resolvePageRequest,
   toPageQueryParams,
 } from './pagination';
-export type { PageRequest, PageResponse } from './pagination';
 
 export { ApiClientProvider, useApiClient } from './react/ApiClientProvider';
 export type { ApiClientProviderProps } from './react/ApiClientProvider';

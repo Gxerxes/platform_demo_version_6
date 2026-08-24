@@ -27,18 +27,22 @@ describe('normalizeAxiosError', () => {
 
   it('normalizes timeout to REQUEST_TIMEOUT', () => {
     const error = new axios.AxiosError('timeout of 10000ms exceeded', 'ECONNABORTED');
-    const result = normalizeAxiosError(error);
-    expect(result.code).toBe(ErrorCode.REQUEST_TIMEOUT);
+    expect(normalizeAxiosError(error).code).toBe(ErrorCode.REQUEST_TIMEOUT);
   });
 
   it('normalizes network errors', () => {
     const error = new axios.AxiosError('Network Error', 'ERR_NETWORK');
-    const result = normalizeAxiosError(error);
-    expect(result.code).toBe(ErrorCode.NETWORK_ERROR);
+    expect(normalizeAxiosError(error).code).toBe(ErrorCode.NETWORK_ERROR);
   });
+});
 
-  it('preserves legacy constructor compatibility', () => {
-    const error = new ApiError('Not found', 404, ErrorCode.NOT_FOUND);
+describe('normalizeError', () => {
+  it('normalizes ApiError to plain object', () => {
+    const error = new ApiError({
+      message: 'Not found',
+      code: ErrorCode.NOT_FOUND,
+      status: 404,
+    });
     expect(normalizeError(error).code).toBe(ErrorCode.NOT_FOUND);
   });
 });

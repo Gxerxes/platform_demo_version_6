@@ -15,7 +15,7 @@ export const defaultQueryConfig: Required<PaletteQueryConfig> = {
 
 export const defaultPlatformConfig: PalettePlatformConfig = {
   api: {
-    baseUrl: '/api',
+    baseURL: '/api',
     ...defaultApiConfig,
   },
   query: {

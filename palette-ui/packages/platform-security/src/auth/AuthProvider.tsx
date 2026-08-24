@@ -27,7 +27,7 @@ export function AuthProvider({ config, children, onSessionExpired }: AuthProvide
   const authApi = useMemo(
     () =>
       createAuthApi({
-        baseUrl: config.api.baseUrl,
+        baseURL: config.api.baseURL,
         loginPath: config.auth?.loginPath,
         logoutPath: config.auth?.logoutPath,
         userPath: config.auth?.userPath,

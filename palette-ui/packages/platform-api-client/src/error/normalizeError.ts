@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ApiError } from './ApiError';
 import { ErrorCode, statusToErrorCode } from './ErrorCode';
-import type { PaletteError } from './types';
+import type { NormalizedError } from './types';
 
 function extractMessage(data: unknown, fallback: string): string {
   if (typeof data === 'object' && data !== null && 'message' in data) {
@@ -10,7 +10,6 @@ function extractMessage(data: unknown, fallback: string): string {
       return message;
     }
   }
-
   return fallback;
 }
 
@@ -21,7 +20,6 @@ function extractCode(data: unknown, status: number): string {
       return code;
     }
   }
-
   return statusToErrorCode(status);
 }
 
@@ -71,14 +69,12 @@ export function normalizeAxiosError(error: unknown): ApiError {
     }
 
     const { status, data, headers } = error.response;
-    const requestId = extractRequestId(headers as Record<string, unknown>, configHeaders);
-
     return new ApiError({
       message: extractMessage(data, error.message || 'Request failed'),
       code: extractCode(data, status),
       status,
       details: data,
-      requestId,
+      requestId: extractRequestId(headers as Record<string, unknown>, configHeaders),
       originalError: error,
     });
   }
@@ -99,42 +95,20 @@ export function normalizeAxiosError(error: unknown): ApiError {
   });
 }
 
-export function isPaletteError(error: unknown): error is PaletteError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    'message' in error &&
-    typeof (error as PaletteError).code === 'string' &&
-    typeof (error as PaletteError).message === 'string'
-  );
-}
-
-export function normalizeError(error: unknown): PaletteError {
-  if (isPaletteError(error)) {
-    return error;
-  }
-
+export function normalizeError(error: unknown): NormalizedError {
   if (error instanceof ApiError) {
     return {
       code: error.code,
       message: error.message,
       status: error.status,
-      details: error.details,
       requestId: error.requestId,
+      details: error.details,
     };
   }
 
   if (error instanceof Error) {
-    return {
-      code: ErrorCode.UNKNOWN_ERROR,
-      message: error.message,
-    };
+    return { code: ErrorCode.UNKNOWN_ERROR, message: error.message };
   }
 
-  return {
-    code: ErrorCode.UNKNOWN_ERROR,
-    message: 'An unexpected error occurred',
-    details: error,
-  };
+  return { code: ErrorCode.UNKNOWN_ERROR, message: 'An unexpected error occurred', details: error };
 }

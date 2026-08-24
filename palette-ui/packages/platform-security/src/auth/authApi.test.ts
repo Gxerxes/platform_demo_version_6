@@ -32,7 +32,7 @@ describe('createAuthApi', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const api = createAuthApi({
-      baseUrl: '/api',
+      baseURL: '/api',
       loginPath: undefined,
       logoutPath: undefined,
       userPath: undefined,

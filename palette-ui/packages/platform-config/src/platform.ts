@@ -9,7 +9,7 @@ export interface PaletteAuthConfig {
 }
 
 export interface PaletteApiConfig {
-  baseUrl: string;
+  baseURL: string;
   timeout?: number;
   withCredentials?: boolean;
   headers?: Record<string, string>;

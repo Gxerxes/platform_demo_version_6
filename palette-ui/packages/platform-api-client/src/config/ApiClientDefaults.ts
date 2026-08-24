@@ -5,9 +5,7 @@ export const DEFAULT_API_CLIENT_CONFIG: ResolvedApiClientConfig = {
   timeout: 10_000,
   withCredentials: true,
   headers: {},
-  auth: {
-    enabled: true,
-  },
+  auth: { enabled: true },
   retry: {
     enabled: false,
     retries: 0,

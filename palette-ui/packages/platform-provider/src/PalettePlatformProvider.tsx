@@ -81,8 +81,8 @@ function AuthPlatformProviders({
 
   const handleSessionExpired = useCallback(() => {
     const loginPath = config.auth?.loginPath ?? '/auth/login';
-    const baseUrl = config.api.baseUrl.replace(/\/$/, '');
-    window.location.href = `${baseUrl}${loginPath.startsWith('/') ? loginPath : `/${loginPath}`}`;
+    const baseURL = config.api.baseURL.replace(/\/$/, '');
+    window.location.href = `${baseURL}${loginPath.startsWith('/') ? loginPath : `/${loginPath}`}`;
   }, [config]);
 
   return (

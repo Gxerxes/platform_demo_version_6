@@ -5,10 +5,10 @@ import { resolvePlatformConfig } from './resolve';
 describe('resolvePlatformConfig', () => {
   it('applies platform defaults', () => {
     const resolved = resolvePlatformConfig(defaultPlatformConfig, undefined, {
-      api: { baseUrl: '/palette/api/v1' },
+      api: { baseURL: '/palette/api/v1' },
     });
 
-    expect(resolved.api.baseUrl).toBe('/palette/api/v1');
+    expect(resolved.api.baseURL).toBe('/palette/api/v1');
     expect(resolved.api.timeout).toBe(30_000);
     expect(resolved.api.withCredentials).toBe(true);
     expect(resolved.query?.staleTime).toBe(30_000);
@@ -17,13 +17,13 @@ describe('resolvePlatformConfig', () => {
   it('merges nested api config without losing defaults', () => {
     const resolved = resolvePlatformConfig(defaultPlatformConfig, undefined, {
       api: {
-        baseUrl: '/api',
+        baseURL: '/api',
         timeout: 10_000,
       },
     });
 
     expect(resolved.api).toEqual({
-      baseUrl: '/api',
+      baseURL: '/api',
       timeout: 10_000,
       withCredentials: true,
     });
@@ -33,13 +33,13 @@ describe('resolvePlatformConfig', () => {
     const defaults = {
       ...defaultPlatformConfig,
       api: {
-        baseUrl: '/api',
+        baseURL: '/api',
         headers: { 'X-Platform': 'palette' },
       },
     };
     const application = {
       api: {
-        baseUrl: '/api',
+        baseURL: '/api',
         headers: { 'X-App': 'trading' },
       },
     };

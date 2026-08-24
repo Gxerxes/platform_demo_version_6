@@ -11,7 +11,7 @@ export const paletteConfig: PaletteAppConfig = {
 
 export const platformConfig: PalettePlatformConfig = {
   api: {
-    baseUrl: '/api',
+    baseURL: '/api',
     timeout: 30000,
   },
   auth: {

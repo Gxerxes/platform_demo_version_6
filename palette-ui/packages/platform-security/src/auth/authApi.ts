@@ -18,7 +18,7 @@ export interface AuthStatusResponse {
 }
 
 export interface AuthApiConfig {
-  baseUrl: string;
+  baseURL: string;
   loginPath?: string;
   logoutPath?: string;
   userPath?: string;
@@ -34,8 +34,8 @@ const DEFAULT_PATHS = {
   statusPath: '/auth/status',
 } as const;
 
-function resolveUrl(baseUrl: string, path: string): string {
-  const base = baseUrl.replace(/\/$/, '');
+function resolveUrl(baseURL: string, path: string): string {
+  const base = baseURL.replace(/\/$/, '');
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${base}${normalizedPath}`;
 }
@@ -78,11 +78,11 @@ export function createAuthApi(config: AuthApiConfig) {
   }
 
   return {
-    getStatus: () => request<AuthStatusResponse>(resolveUrl(config.baseUrl, paths.statusPath)),
-    getUser: () => request<AuthUser>(resolveUrl(config.baseUrl, paths.userPath)),
-    getSession: () => request<AuthSession>(resolveUrl(config.baseUrl, paths.sessionPath)),
+    getStatus: () => request<AuthStatusResponse>(resolveUrl(config.baseURL, paths.statusPath)),
+    getUser: () => request<AuthUser>(resolveUrl(config.baseURL, paths.userPath)),
+    getSession: () => request<AuthSession>(resolveUrl(config.baseURL, paths.sessionPath)),
     login: async () => {
-      const url = resolveUrl(config.baseUrl, paths.loginPath);
+      const url = resolveUrl(config.baseURL, paths.loginPath);
       const response = await fetch(url, {
         credentials: 'include',
         redirect: 'manual',
@@ -100,7 +100,7 @@ export function createAuthApi(config: AuthApiConfig) {
       }
     },
     logout: () =>
-      request<void>(resolveUrl(config.baseUrl, paths.logoutPath), { method: 'POST' }),
+      request<void>(resolveUrl(config.baseURL, paths.logoutPath), { method: 'POST' }),
   };
 }
 

@@ -14,40 +14,36 @@ export class ApiClient {
     private readonly config: ResolvedApiClientConfig,
   ) {}
 
-  async get<T>(url: string, config?: ApiRequestConfig): Promise<T> {
+  get<T>(url: string, config?: ApiRequestConfig): Promise<T> {
     return this.request<T>({ method: 'GET', url, ...config });
   }
 
-  async getPage<T>(
-    url: string,
-    pageRequest?: PageRequest,
-    config?: ApiRequestConfig,
-  ): Promise<PageResponse<T>> {
-    const params = {
-      ...config?.params,
-      ...toPageQueryParams(pageRequest),
-    };
-    const data = await this.get<unknown>(url, { ...config, params });
-    return normalizePageResponse<T>(data, pageRequest);
+  getPage<T>(url: string, pageRequest?: PageRequest, config?: ApiRequestConfig): Promise<PageResponse<T>> {
+    const params = { ...config?.params, ...toPageQueryParams(pageRequest) };
+    return this.get<unknown>(url, { ...config, params }).then((data) =>
+      normalizePageResponse<T>(data, pageRequest),
+    );
   }
 
-  async post<T>(url: string, data?: unknown, config?: ApiRequestConfig): Promise<T> {
+  post<T>(url: string, data?: unknown, config?: ApiRequestConfig): Promise<T> {
     return this.request<T>({ method: 'POST', url, data, ...config });
   }
 
-  async put<T>(url: string, data?: unknown, config?: ApiRequestConfig): Promise<T> {
+  put<T>(url: string, data?: unknown, config?: ApiRequestConfig): Promise<T> {
     return this.request<T>({ method: 'PUT', url, data, ...config });
   }
 
-  async patch<T>(url: string, data?: unknown, config?: ApiRequestConfig): Promise<T> {
+  patch<T>(url: string, data?: unknown, config?: ApiRequestConfig): Promise<T> {
     return this.request<T>({ method: 'PATCH', url, data, ...config });
   }
 
-  async delete<T>(url: string, config?: ApiRequestConfig): Promise<T> {
+  delete<T>(url: string, config?: ApiRequestConfig): Promise<T> {
     return this.request<T>({ method: 'DELETE', url, ...config });
   }
 
-  async request<T>(requestConfig: ApiRequestConfig & { method: HttpMethod; url: string; data?: unknown }): Promise<T> {
+  async request<T>(
+    requestConfig: ApiRequestConfig & { method: HttpMethod; url: string; data?: unknown },
+  ): Promise<T> {
     const response = await this.requestWithMeta<T>(requestConfig);
     return response.data;
   }
@@ -68,22 +64,15 @@ export class ApiClient {
     });
 
     const requestIdHeader = this.config.requestId.headerName;
-    const requestId =
-      response.headers[requestIdHeader.toLowerCase()] ??
-      response.headers[requestIdHeader] ??
-      this.axios.defaults.headers.common[requestIdHeader];
 
     return {
       data: response.data,
       status: response.status,
       headers: response.headers as Record<string, string>,
-      requestId: requestId ? String(requestId) : undefined,
-      // resolvedUrl kept for observability consumers via hooks
+      requestId:
+        response.headers[requestIdHeader.toLowerCase()] ??
+        response.headers[requestIdHeader] ??
+        undefined,
     };
-  }
-
-  /** Returns a shallow copy of the resolved configuration for this isolated instance. */
-  getConfig(): Readonly<ResolvedApiClientConfig> {
-    return { ...this.config };
   }
 }

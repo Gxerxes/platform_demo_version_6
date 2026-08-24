@@ -1,5 +1,4 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
-import { PaletteEvents } from '@palette/platform-event';
 import type { ApiClientConfig, ResolvedApiClientConfig } from '../config/ApiClientConfig';
 import { mergeConfig } from '../config/mergeConfig';
 import { createSafeLogger } from '../observability/types';
@@ -14,33 +13,11 @@ import {
   handleUnauthorized,
 } from '../interceptors/errorInterceptor';
 import { attachRetryInterceptor } from '../retry/retryInterceptor';
-import {
-  runAfterResponseHook,
-  runBeforeRequestHook,
-  runOnErrorHook,
-} from '../hooks/types';
+import { runAfterResponseHook, runBeforeRequestHook, runOnErrorHook } from '../hooks/hooks';
 import { ApiError } from '../error/ApiError';
 import { normalizeAxiosError } from '../error/normalizeError';
 import { ApiClient } from './ApiClient';
 
-/**
- * Interceptor pipeline (request):
- * 1. Platform request ID
- * 2. Platform metadata headers
- * 3. Authentication (Bearer token when configured)
- * 4. Consumer request interceptors
- *
- * Interceptor pipeline (response):
- * 1. Platform response interceptors (logging)
- * 2. Consumer response interceptors
- *
- * Error pipeline:
- * 1. Retry (idempotent methods only, when enabled)
- * 2. Error normalization → ApiError
- * 3. Unauthorized handler
- * 4. Consumer error interceptors
- * 5. Lifecycle onError hooks
- */
 export function createApiClient(config?: ApiClientConfig): ApiClient {
   const resolved = mergeConfig(config);
   resolved.logger = createSafeLogger(resolved.logger);
@@ -76,8 +53,8 @@ function registerRequestInterceptors(
   }
 
   instance.interceptors.request.use(async (requestConfig) => {
-    const startedAt = Date.now();
-    (requestConfig as InternalAxiosRequestConfig & { __startedAt?: number }).__startedAt = startedAt;
+    (requestConfig as InternalAxiosRequestConfig & { __startedAt?: number }).__startedAt =
+      Date.now();
 
     const headerName = config.requestId.headerName;
     const requestId =
@@ -95,13 +72,7 @@ function registerRequestInterceptors(
     config.logger?.debug?.('HTTP request started', {
       method: requestConfig.method?.toUpperCase(),
       url: requestConfig.url,
-      baseURL: requestConfig.baseURL,
       requestId,
-    });
-
-    config.eventBus?.emit(PaletteEvents.API_REQUEST, {
-      method: requestConfig.method?.toUpperCase(),
-      url: requestConfig.url,
     });
 
     return requestConfig;
@@ -124,7 +95,6 @@ function registerResponseInterceptors(
     const startedAt = (
       response.config as InternalAxiosRequestConfig & { __startedAt?: number }
     ).__startedAt;
-    const durationMs = startedAt ? Date.now() - startedAt : undefined;
     const headerName = config.requestId.headerName;
     const requestId =
       response.headers[headerName.toLowerCase()] ??
@@ -132,24 +102,19 @@ function registerResponseInterceptors(
       response.config.headers.get(headerName);
 
     await runAfterResponseHook(config, {
+      method: (response.config.method ?? 'GET').toUpperCase(),
+      url: response.config.url ?? '',
       status: response.status,
       data: response.data,
       headers: response.headers as Record<string, unknown>,
       requestId: requestId ? String(requestId) : undefined,
-      durationMs,
-    });
-
-    config.eventBus?.emit(PaletteEvents.API_RESPONSE, {
-      method: response.config.method?.toUpperCase(),
-      url: response.config.url,
-      status: response.status,
+      durationMs: startedAt ? Date.now() - startedAt : undefined,
     });
 
     config.logger?.info?.('HTTP request completed', {
       method: response.config.method?.toUpperCase(),
       url: response.config.url,
       status: response.status,
-      durationMs,
       requestId,
     });
 
@@ -172,23 +137,14 @@ function registerErrorInterceptors(
   );
 
   for (const interceptor of config.interceptors.error) {
-    instance.interceptors.response.use(
-      (response) => response,
-      interceptor,
-    );
+    instance.interceptors.response.use((response) => response, interceptor);
   }
 
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
       const apiError = error instanceof ApiError ? error : normalizeAxiosError(error);
-
-      if (apiError.status === 401) {
-        config.eventBus?.emit(PaletteEvents.AUTH_EXPIRED);
-      }
-
       await runOnErrorHook(config, apiError);
-      config.eventBus?.emit(PaletteEvents.ERROR, apiError);
 
       config.logger?.error?.('HTTP request failed', {
         code: apiError.code,

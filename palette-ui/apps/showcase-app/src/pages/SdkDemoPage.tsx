@@ -54,7 +54,7 @@ export function SdkDemoPage() {
             usePlatform
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            API Base URL: {platform.config.api.baseUrl}
+            API Base URL: {platform.config.api.baseURL}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             App Name: {paletteConfig.appName}

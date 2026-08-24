@@ -7,41 +7,13 @@ export class ApiError extends Error {
   readonly details?: unknown;
   readonly originalError?: unknown;
 
-  /** @deprecated Use `details` instead */
-  get data(): unknown {
-    return this.details;
-  }
-
-  constructor(options: ApiErrorOptions);
-  constructor(
-    message: string,
-    status?: number,
-    code?: string,
-    details?: unknown,
-    requestId?: string,
-  );
-  constructor(
-    messageOrOptions: string | ApiErrorOptions,
-    status = 0,
-    code = 'UNKNOWN_ERROR',
-    details?: unknown,
-    requestId?: string,
-  ) {
-    if (typeof messageOrOptions === 'object') {
-      super(messageOrOptions.message);
-      this.code = messageOrOptions.code;
-      this.status = messageOrOptions.status;
-      this.requestId = messageOrOptions.requestId;
-      this.details = messageOrOptions.details;
-      this.originalError = messageOrOptions.originalError;
-    } else {
-      super(messageOrOptions);
-      this.code = code;
-      this.status = status;
-      this.details = details;
-      this.requestId = requestId;
-    }
-
+  constructor(options: ApiErrorOptions) {
+    super(options.message);
     this.name = 'ApiError';
+    this.code = options.code;
+    this.status = options.status;
+    this.requestId = options.requestId;
+    this.details = options.details;
+    this.originalError = options.originalError;
   }
 }
